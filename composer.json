@@ -1,0 +1,13 @@
+{
+    "name": "aloneit/alonecms",
+    "description": "ThinkPHP",
+    "type": "library",
+    "license": "MulanPSL2",
+    "authors": [
+        {
+            "name": "aloneit",
+            "email": "alone@alonetech.com"
+        }
+    ],
+    "require": {}
+}
