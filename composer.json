@@ -9,5 +9,7 @@
             "email": "alone@alonetech.com"
         }
     ],
-    "require": {}
+    "require": {
+        "topthink/framework": "6.1"
+    }
 }
