@@ -1,6 +1,6 @@
 {
-    "name": "aloneit/alonecms",
-    "description": "ThinkPHP",
+    "name": "alocms/framework",
+    "description": "基于ThinkPHP二次封装的业务框架",
     "type": "library",
     "license": "MulanPSL2",
     "authors": [
