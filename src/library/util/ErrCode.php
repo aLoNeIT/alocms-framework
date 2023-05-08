@@ -6,6 +6,8 @@ use think\facade\Config;
 
 /**
  *  错误码处理类
+ * 
+ * @author alone <alone@alonetech.com>
  */
 class ErrCode
 {
@@ -46,32 +48,26 @@ class ErrCode
     /**
      * 获取JsonTable对象的错误
      *
-     * @param $state 错误状态码
+     * @param string|integer $state 错误状态码
      * @param array $param 额外信息参数
+     * @param boolean $clone 是否克隆
      * @return JsonTable 返回包含错误信息的JsonTable对象
      */
-    public function getJError($state, $param = [], $clone = true)
+    public function getJError($state, array $param = [], bool $clone = true): JsonTable
     {
-        $state = strval($state);
-        $msg = isset($this->errorCode[$state]) ? lang($this->errorCode[$state], $param) : '';
-        return $clone ? $this->jsonTable->withMessage($msg, $state) : $this->jsonTable->message($msg, $state);
+        return $this->getJErrorWithData($state, $param, null, $clone);
     }
 
     /**
-     *  getJErrorWithData   获取JsonTable对象的错误 包含data
+     * 获取JsonTable对象的错误 包含data
      *
-     * @param       $state  错误状态码
-     * @param array $param  额外信息参数
-     * @param array $data  错误码
-     * @param bool  $clone
-     *
-     * @return mixed
-     *
-     * User: Loong
-     * Date: 2022/6/16
-     * Time: 19:10
+     * @param string|integer $state 错误状态码
+     * @param array $param 额外信息参数
+     * @param mixed $data 错误附带信息
+     * @param boolean $clone 是否克隆
+     * @return JsonTable 返回包含错误信息的JsonTable对象
      */
-    public function getJErrorWithData($state, $param = [], $data = [], $clone = true)
+    public function getJErrorWithData($state, array $param = [], $data = null, bool $clone = true): JsonTable
     {
         $state = strval($state);
         $msg = isset($this->errorCode[$state]) ? lang($this->errorCode[$state], $param) : '';
@@ -82,9 +78,10 @@ class ErrCode
      * 获取错误文本
      *
      * @param string|integer $state 错误码
+     * @param array $param 额外信息参数
      * @return string 返回错误文本
      */
-    public function getErrText($state, $param = [])
+    public function getErrText($state, array $param = []): string
     {
         $state = strval($state);
         return isset($this->errorCode[$state]) ? lang($this->errorCode[$state], $param) : '';
@@ -93,10 +90,10 @@ class ErrCode
     /**
      * 判断错误码是否存在
      *
-     * @param int $state 错误码
-     * @return bool
+     * @param string|integer $state 错误码
+     * @return boolean 返回错误码是否存在的布尔结果
      */
-    public function exists($state)
+    public function exists($state): bool
     {
         return isset($this->errorCode[strval($state)]);
     }

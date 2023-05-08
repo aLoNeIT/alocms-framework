@@ -15,10 +15,7 @@
         },
         "psr-0": {
             "alocms\\": "src/extend/"
-        },
-        "files": [
-            "src/Helper.php"
-        ]
+        }
     },
     "require": {
         "php": ">=7.4",

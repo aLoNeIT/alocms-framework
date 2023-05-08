@@ -8,6 +8,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 
 /**
  * 基于php-amqplib的RabbitMQ工具类
+ * 
  * @author alone <alone@alonetech.com>
  */
 class RabbitMQ
@@ -66,7 +67,7 @@ class RabbitMQ
      * 打开AMQP连接
      *
      * @param boolean $force 是否强制重连
-     * @return RabbitMQ
+     * @return static 返回当前对象
      */
     protected function open($force = false): static
     {
@@ -94,7 +95,7 @@ class RabbitMQ
     /**
      * 强制打开一个新连接
      *
-     * @return RabbitMQ
+     * @return static
      */
     public function reopen(): static
     {
@@ -112,12 +113,13 @@ class RabbitMQ
     /**
      * 关闭连接
      *
-     * @return void
+     * @return static
      */
-    public function close(): void
+    public function close(): static
     {
         !\is_null($this->channel) && $this->channel->close();
         !\is_null($this->connection) && $this->connection->close();
+        return $this;
     }
     /**
      * 获取与MQ的通信通道
@@ -145,7 +147,7 @@ class RabbitMQ
      * @param boolean $durable 是否持久化
      * @param boolean $autoDelete 是否通道关闭时自动删除交换机
      * @param boolean $nowait 是否执行后不等待立刻结束
-     * @return RabbitMQ
+     * @return static 返回当前对象
      */
     public function exchangeDeclare(
         string $name,
@@ -168,7 +170,7 @@ class RabbitMQ
      * @param boolean $exclusive 排他队列，队列只由创建它的进程进行消费，进程关闭则队列销毁
      * @param boolean $autoDelete 是否通道关闭时自动删除交换机
      * @param boolean $nowait 是否执行后不等待立刻结束
-     * @return RabbitMQ
+     * @return static 返回当前对象
      */
     public function queueDeclare(
         string $name,
@@ -188,7 +190,7 @@ class RabbitMQ
      * @param string $queue 队列名
      * @param string $exchange 交换机名
      * @param string $route 路由名
-     * @return RabbitMQ
+     * @return static 返回当前对象
      */
     public function queueBind(string $queue, string $exchange, string $route = ''): static
     {
@@ -200,7 +202,7 @@ class RabbitMQ
      * 配置消费者消费数据负载能力
      *
      * @param integer $num 消费者同时能消费的数据数量
-     * @return RabbitMQ
+     * @return static 返回当前对象
      */
     public function queueQos(int $num = 1): static
     {
@@ -215,7 +217,7 @@ class RabbitMQ
      * @param string $exchange 交换机名称
      * @param string $route 路由名称
      * @param array $properties 消息属性
-     * @return RabbitMQ
+     * @return static 返回当前对象
      */
     public function publish($data, string $exchange, string $route, array $properties = []): static
     {
