@@ -27,7 +27,7 @@ class AloCms
     protected $app = null;
 
     protected $provider = [
-        'think\Request' => Request::class,
+        // 'think\Request' => Request::class,
         'think\exception\Handle' => ExceptionHandle::class,
         'JsonTable' => JsonTable::class,
         'ErrCode' => ErrCode::class,
@@ -44,6 +44,9 @@ class AloCms
 
     protected function initialize(): void
     {
+        // 单独处理think\Request容器
+        $request = $this->app->make('think\Request');
+        if(! $request instanceof )
         // 初始化容器配置
         \array_walk($this->provider, function ($value, $key) {
             // 如果未配置该容器，则使用当前默认配置
