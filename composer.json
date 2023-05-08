@@ -2,7 +2,7 @@
     "name": "alocms/framework",
     "description": "基于ThinkPHP二次封装的业务框架",
     "type": "library",
-    "license": "MulanPSL2",
+    "license": "MulanPSL-2.0",
     "authors": [
         {
             "name": "aloneit",
