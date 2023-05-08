@@ -9,7 +9,20 @@
             "email": "alone@alonetech.com"
         }
     ],
+    "autoload": {
+        "psr-4": {
+            "alocms\\": "src"
+        },
+        "psr-0": {
+            "alocms\\": "src/extend/"
+        },
+        "files": [
+            "src/Helper.php"
+        ]
+    },
     "require": {
-        "topthink/framework": "6.1"
+        "php": ">=7.4",
+        "topthink/framework": "6.1",
+        "php-amqplib/php-amqplib": "^3.0"
     }
 }
