@@ -12,14 +12,12 @@
     "autoload": {
         "psr-4": {
             "alocms\\": "src"
-        },
-        "psr-0": {
-            "alocms\\": "src/extend/"
         }
     },
     "require": {
         "php": ">=7.4",
         "topthink/framework": "6.1",
-        "php-amqplib/php-amqplib": "^3.0"
+        "php-amqplib/php-amqplib": "^3.0",
+        "xavier/xcron-expression": "^0.11.0"
     }
 }

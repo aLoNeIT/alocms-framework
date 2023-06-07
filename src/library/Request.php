@@ -41,26 +41,13 @@ class Request extends \think\Request
         }
         return $this->requestId;
     }
-    /**
-     * 获取来源id，该id由前端传递
-     *
-     * @return string
-     */
-    public function originId(): string
-    {
-        return $this->header('origin_id', '');
-    }
+
 
     /**
-     *  getCheck 是否需要校验 session和权限，传入蚕食是system的权限函数key
+     * 接口白名单
      *
      * @param $type
-     *
      * @return bool
-     *
-     * User: Loong
-     * Date: 2020/12/15
-     * Time: 13:50
      */
     public function getCheck($type): bool
     {

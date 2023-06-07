@@ -31,7 +31,7 @@ class Manager extends ManagerBase
     public function __construct(App $app)
     {
         parent::__construct($app);
-        $this->namespace = "\\{$this->name}\\driver\\";
+        $this->namespace = "\\alocms\\extend\\{$this->name}\\driver\\";
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\library\util;
 
+use alocms\library\facade\JsonTable as JsonTableFacade;
 use think\helper\Str;
 
 class Helper
@@ -20,6 +21,56 @@ class Helper
     public static function md5Salt(string $str, string $salt = 'cms', bool $md5 = false): string
     {
         return $md5 ? md5($str . $salt) : md5(md5($str) . $salt);
+    }
+
+    /**
+     * 生成随机字符串
+     *
+     * @param integer $length 生成的随机字符串长度
+     * @param integer $type 生成随机字符的类型,1小写字母，2大写字母，4数字，8特殊字符，可以组合
+     * @return string 返回生成的随机字符串
+     */
+    public static function randStr(int $length = 16, int $type = 5): string
+    {
+        $chars = '';
+        if (1 == (1 & $type)) {
+            $chars .= 'abcdefghijklmnopqrstuvwxyz';
+        }
+        if (2 == (2 & $type)) {
+            $chars .= 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        }
+        if (4 == (4 & $type)) {
+            $chars .= '0123456789';
+        }
+        if (8 == (8 & $type)) {
+            $chars .= '!@#$%^&*()_ []{}<>~`+=,.;:/?|';
+        }
+        $chars = \str_shuffle($chars);
+        return \substr($chars, 0, $length);
+    }
+
+    /**
+     * 获取今日0点时间戳
+     *
+     * @return integer
+     */
+    public static function zeroOfDay(int $time = null): int
+    {
+        $time = $time ?: time();
+        return strtotime(date('Y-m-d', $time));
+    }
+
+    /**
+     * 抛出异常
+     *
+     * @param string|JsonTable $msg 异常信息
+     * @param integer|string $state 错误码
+     * @param mix $data 扩展数据
+     * @return void
+     */
+    public static function exception($msg = 'error', $state = 1, $data = null)
+    {
+        throw new CmsException($msg, $state, $data);
     }
 
     /**
@@ -274,7 +325,7 @@ class Helper
      * @param array $data 待处理的数组,kv结构
      * @return array 返回处理后的数组
      */
-    function arrayDelEmpty(array $data): array
+    public static function arrayDelEmpty(array $data): array
     {
         $result = [];
         foreach ($data as $key => $value) {
@@ -283,5 +334,135 @@ class Helper
             }
         }
         return $result;
+    }
+
+    /**
+     * 日志行为监听
+     *
+     * @param string $channel 通道
+     * @param string $msg 摘要数据
+     * @param mix $data 日志数据
+     * @param string $level 级别，debug info warning error critical alert emergency
+     *
+     * @return mix 返回监听log事件的所有行为返回值集合
+     */
+    public static function logListen(string $channel, string $msg, $data = null, string $level = 'info'): void
+    {
+        /** @var \alocms\library\Request $request */
+        $request = request();
+        // 组装数据
+        $eventData = [
+            'channel' => $channel,
+            'msg' => $msg,
+            'level' => $level,
+            'request_id' => $request->requestId(),
+            'data' => \json_encode($data, JSON_UNESCAPED_UNICODE),
+        ];
+        // 如果是cli模式，在控制台输出一份
+        if ($request->isCli()) {
+            dump($eventData);
+        }
+        // 触发日志事件
+        \event('Log', $eventData);
+    }
+
+    /**
+     * 调试日志记录
+     *
+     * @param string $channel 通道
+     * @param string $msg 摘要数据
+     * @param mix $data 日志数据
+     * @return void
+     */
+    public static function logListenDebug(string $channel, string $msg, $data = null): void
+    {
+        static::logListen($channel, $msg, $data, 'debug');
+    }
+
+    /**
+     * 错误日志记录，用于记录业务执行失败的日志
+     *
+     * @param string $channel 通道
+     * @param string $msg 消息
+     * @param mix $data 日志数据
+     * @return void
+     */
+    public static function logListenError(string $channel, string $msg, $data = null)
+    {
+        static::logListen($channel, $msg, $data, 'error');
+    }
+
+    /**
+     * 警告日志记录，用于记录一些不影响业务的警告信息
+     *
+     * @param string $channel 通道
+     * @param string $msg 消息
+     * @param mix $data 日志数据
+     * @return void
+     */
+    public static function logListenWarning(string $channel, string $msg, $data = null)
+    {
+        static::logListen($channel, $msg, $data, 'warning');
+    }
+
+    /**
+     * 异常日志记录，用于异常捕获时
+     *
+     * @param string $channel 通道
+     * @param string $msg 消息
+     * @param mix $data 日志数据
+     * @return void
+     */
+    public static function logListenCritical(string $channel, string $msg, $data = null)
+    {
+        static::logListen($channel, $msg, $data, 'critical');
+    }
+    /**
+     * 记录异常日志
+     *
+     * @param string $class 异常产生所在类名
+     * @param string $function 异常产生所在函数名
+     * @param \Throwable $ex 异常对象
+     * @return JsonTable 返回JsonTable对象
+     */
+    public static function logListenException(string $class, string $function, \Throwable $ex, array $data = []): JsonTable
+    {
+        $ex instanceof CmsException
+            ? static::logListenError(
+                $class,
+                $function . ":{$ex->getMessage()}",
+                [
+                    'exception_data' => $ex->getData(),
+                    'origin_data' => $data,
+                ]
+            )
+            : static::logListenCritical(
+                $class,
+                $function . ":{$ex->getMessage()}",
+                [
+                    'trace' => $ex->getTrace(),
+                    'origin_data' => $data,
+                ]
+            );
+        return JsonTableFacade::error(
+            $ex->getMessage(),
+            $ex instanceof CmsException ? $ex->getState() : 1,
+            $ex instanceof CmsException ? $ex->getData() : $ex->getTrace()
+        );
+    }
+
+    /**
+     * 判断内容并抛出异常
+     *
+     * @param JsonTable $jsonTable jsonTable对象
+     * @return JsonTable 返回传递进来的JsonTable对象
+     * @throws YzbException
+     */
+    public static function throwifJError(JsonTable $jsonTable): JsonTable
+    {
+        if (!$jsonTable->isSuccess()) {
+            throw new CmsException($jsonTable);
+        }
+        return $jsonTable;
     }
 }
