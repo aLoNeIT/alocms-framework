@@ -8,7 +8,7 @@ use alocms\library\util\JsonTable;
 /**
  * 定时清理文件
  */
-class Test extends Base
+class CronTest extends Base
 {
     /** @inheritDoc */
     public function doProcess(&$info): JsonTable

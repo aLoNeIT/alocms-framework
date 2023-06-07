@@ -67,7 +67,7 @@ abstract class Base extends CommonBase
     {
         return [
             'name' => $this->name,
-            'date' => date('Ymd'),
+            'date' => Helper::zeroOfDay(),
             'loop_num' => 0, // 每日最大执行次数,0为不限制次数
         ];
     }

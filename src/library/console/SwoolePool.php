@@ -53,6 +53,16 @@ class SwoolePool extends Base
         'sleep_time' => 30,
         'sleep_step' => 50,
         'task' => [
+            // 测试代码
+            [
+                'name' => 'ProcessTest',
+                'class' => 'alocms\library\console\process\ProcessTest',
+                'worker_num' => 1,
+                'loop_num' => 1000,
+                'sleep_time' => 1,
+                'sleep_step' => 1,
+                'mutex' => false,
+            ],
             // 定时任务发布者
             [
                 'name' => 'CronPublisher',
@@ -62,7 +72,6 @@ class SwoolePool extends Base
                 'sleep_time' => 1,
                 'sleep_step' => 1,
                 'mutex' => false,
-
             ],
             // 定时任务消费者
             [
