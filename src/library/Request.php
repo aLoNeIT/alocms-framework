@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace alocms\library;
 
+use alocms\library\util\Helper;
+
 // 应用请求对象类
 class Request extends \think\Request
 {
@@ -13,7 +15,7 @@ class Request extends \think\Request
     {
         parent::__construct();
         // 通过配置文件读取代理服务器地址
-        $proxyServerIp = config('system.proxy_server');
+        $proxyServerIp = config('system.proxy_server', '127.0.0.1,::1');
         if (!\is_null($proxyServerIp)) {
             $this->proxyServerIp = \explode(',', $proxyServerIp);
         }
@@ -26,8 +28,11 @@ class Request extends \think\Request
      */
     public function appType(): int
     {
-        $appTypeMap = config('system.app_type');
-        return intval($appTypeMap[app('http')->getName()] ?? 3);
+        $appTypeMap = config('system.app_type', [
+            'admin' => 1,
+        ]);
+        $appType = $appTypeMap[app('http')->getName()] ?? 3;
+        return (int)$appType;
     }
     /**
      * 获取每次请求唯一标识
@@ -37,26 +42,9 @@ class Request extends \think\Request
     public function requestId(): string
     {
         if (!isset($this->requestId)) {
-            $this->requestId = getmypid() . '-' . time() . '-' . \makeUUID();
+            $this->requestId = getmypid() . '-' . time() . '-' . Helper::makeUUID();
         }
         return $this->requestId;
-    }
-
-
-    /**
-     * 接口白名单
-     *
-     * @param $type
-     * @return bool
-     */
-    public function getCheck($type): bool
-    {
-        $model = app('http')->getName();
-        $controller = request()->controller();
-        $action = request()->action();
-        $url = $model . '/' . $controller . '/' . $action;
-        $route = config('system.white_list');
-        return in_array($url, $route[$type]);
     }
 
     /**

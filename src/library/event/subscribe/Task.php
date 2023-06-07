@@ -13,9 +13,6 @@ use think\facade\Db;
 
 /**
  * Task事件订阅类
- *
- * @author 王阮强 <wangruanqiang@youzhibo.cn>
- * @date 2020-12-11
  */
 class Task
 {

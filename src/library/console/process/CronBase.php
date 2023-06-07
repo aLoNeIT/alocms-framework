@@ -38,7 +38,7 @@ abstract class CronBase extends Api
     protected function initialize(): void
     {
         parent::initialize();
-        $this->config = config('crontask');
+        $this->config = config('crontask', []);
     }
 
     /**

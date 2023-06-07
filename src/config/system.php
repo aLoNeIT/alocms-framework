@@ -18,5 +18,4 @@ return [
     'app_type' => [ // 应用类型对应的模块名
         'admin' => 1,
     ],
-    'database_prefix' => 'sys_',
 ];

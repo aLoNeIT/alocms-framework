@@ -162,7 +162,6 @@ class CronPublisher extends CronBase
                         continue;
                     }
                     $lockName = $this->getLockName($class);
-
                     try {
                         $cron = $one['cron'];
                         $one['next_time'] = $cron->getNextRunDate()->getTimestamp();

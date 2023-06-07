@@ -17,24 +17,7 @@ class Base extends Command
      *
      * @var array
      */
-    protected $config = [
-        'temp_path' => runtime_path(), //运行期临时目录
-        'size' => 32, //该值不能小于task总数，且必须为2的倍数
-        'timeout' => 60,
-        'sleep_time' => 30,
-        'sleep_step' => 50,
-        'task' => [
-            [
-                // 'name' => 'CronPublisher', // 任务名称
-                // 'class' => 'app\console\process\CronPublisher', // 任务类
-                // 'worker_num' => 1, // 启动几个进程跑该任务
-                // 'loop_num' => 1000, // 循环多少次重启
-                // 'sleep_time' => 1, // 总计间隔多久执行一次
-                // 'sleep_step' => 1, // 每多久检测一次是否该运行了
-                // 'mutex' => false, // 是否互斥，true的时候多个进程只会有一个开始执行
-            ],
-        ]
-    ]; //配置信息
+    protected $config = [];
 
     /**
      * 初始化

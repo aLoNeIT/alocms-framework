@@ -75,8 +75,20 @@ trait RabbitMQ
      */
     protected function getConfig()
     {
-        $config = config('rabbitmq');
-        //        $config['password']=\aes_decrypt($config['password']);
+        $config = config('rabbitmq', [
+            'host' => '127.0.0.1',
+            'port' => '5672',
+            'user' => 'guest',
+            'password' => 'guest',
+            'vhost' => '/',
+            'common_task' => [
+                'exchange' => 'alocms.worker.common.task',
+                'queue' => 'alocms.worker.common.task',
+                'key_route' => 'alocms.worker.common.task',
+                'tag_name' => 'alocms.worker.common.task',
+                'type' => 'direct',
+            ],
+        ]);
         return $config;
     }
 

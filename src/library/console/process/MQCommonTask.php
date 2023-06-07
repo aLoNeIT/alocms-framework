@@ -17,7 +17,12 @@ class MQCommonTask extends MQWorker
     protected function initialize(): void
     {
         // 读取MQ通用任务配置
-        $config = \config('system.mq_common_task');
+        $config = \config('system.mq_common_task', [
+            'driver' => 'redis',
+            'queue' => [
+                'name' => 'mq_common_task'
+            ]
+        ]);
         // 配置驱动，父类实例化
         $this->driver = $config['driver'];
         parent::initialize();

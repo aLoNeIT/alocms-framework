@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace alocms\library\console;
 
-use alocms\library\console\Base as BaseConsole;
-use alocms\library\console\process\Base;
+use alocms\library\console\process\Base as BaseProcess;
 use alocms\library\facade\JsonTable as JsonTableFacade;
 use alocms\library\util\Helper;
 use alocms\library\util\JsonTable;
@@ -17,7 +18,7 @@ use think\console\Output;
 /**
  * 使用SwoolePool特性来管理维护子类
  */
-class SwoolePool extends BaseConsole
+class SwoolePool extends Base
 {
 
     /**
@@ -44,6 +45,37 @@ class SwoolePool extends BaseConsole
      * @var string
      */
     protected $pidFile = '';
+
+    protected $config = [
+        'temp_path' => '', //运行期临时目录
+        'size' => 32, //该值不能小于task总数，且必须为2的倍数
+        'timeout' => 60,
+        'sleep_time' => 30,
+        'sleep_step' => 50,
+        'task' => [
+            // 定时任务发布者
+            [
+                'name' => 'CronPublisher',
+                'class' => 'alocms\library\console\process\CronPublisher',
+                'worker_num' => 1,
+                'loop_num' => 1000,
+                'sleep_time' => 1,
+                'sleep_step' => 1,
+                'mutex' => false,
+
+            ],
+            // 定时任务消费者
+            [
+                'name' => 'CronConsumer',
+                'class' => 'alocms\library\console\process\CronConsumer',
+                'worker_num' => 1,
+                'loop_num' => 1000,
+                'sleep_time' => 1,
+                'sleep_step' => 1,
+                'mutex' => false,
+            ],
+        ]
+    ];
 
     /**
      * 命令行配置
@@ -117,9 +149,7 @@ class SwoolePool extends BaseConsole
         if (!empty($config)) {
             $this->config = array_merge($this->config, $config);
         }
-
-        $serverName = \config('system.server_name', '');
-
+        $serverName = \config('system.server_name', 'alocms');
         if (!is_null($serverName)) {
             $this->key = "{$serverName}_{$this->key}";
         }
@@ -178,6 +208,7 @@ class SwoolePool extends BaseConsole
                             $this->echoMess(lang('class_not_found'));
                             continue;
                         }
+                        /** @var \alocms\library\console\process\Api $processObj */
                         $processObj = new $className(0, null, $item['name']);
                         $processObj->setIO($input, $output);
                         $processObj->mutex = \boolval($item['mutex'] ?? false);
@@ -318,7 +349,7 @@ class SwoolePool extends BaseConsole
             //遍历所有运行任务
             foreach ($config as $value) {
                 for ($i = 0; $i < $value['worker_num']; $i++) {
-                    $swooleTable->set($totalCount++, [
+                    $swooleTable->set((string)$totalCount++, [
                         'name' => $value['name'],
                         'class' => json_encode($value['class']),
                         'loop_num' => intval($value['loop_num']),
@@ -330,7 +361,7 @@ class SwoolePool extends BaseConsole
                     ]);
                 }
             }
-            $projectName = config('system.project_name', '');
+            $projectName = config('system.project_name', 'alocms');
             swoole_set_process_name("{$projectName}_swoole_master_{$pid}");
             //创建进程池对象
             $pool = new \Swoole\Process\Pool($totalCount);
@@ -373,7 +404,7 @@ class SwoolePool extends BaseConsole
                         }
                         // 读取mutex值
                         $processObj->mutex = \boolval($config['mutex'] ?? false);
-                        if ($processObj instanceof Base) {
+                        if ($processObj instanceof BaseProcess) {
                             $processObjs[] = $processObj;
                         }
                     }

@@ -56,7 +56,7 @@ abstract class Api extends Base
         parent::initialize();
         //计算任务key完整名称
         $keyData = [];
-        $serverName = \config('system.server_name');
+        $serverName = \config('system.server_name', 'alocms');
         if (!is_null($serverName)) {
             $keyData[] = $serverName;
         }
@@ -67,7 +67,7 @@ abstract class Api extends Base
     /**
      * 执行cli任务主函数
      *
-     * @return void
+     * @return JsonTable
      */
     public function process(): JsonTable
     {
@@ -119,9 +119,7 @@ abstract class Api extends Base
             $info = $this->getInfo();
             // 如果不需要被监听，可以返回false
             if (false !== $info && !($jResult = Event::trigger('TaskBegin', new TaskInfo($info), true))->isSuccess()) {
-                // 触发事件
                 return $jResult;
-                // Helper::throwifJError(Event::trigger('TaskBegin', new TaskInfo($info), true));
             }
             //执行任务主体
             if (!($jResult = $this->doProcess($data, $info))->isSuccess()) {
@@ -131,9 +129,9 @@ abstract class Api extends Base
             $this->echoMess(lang('task_end'));
             // 只有执行成功才回调任务结束
             if (false !== $info && !($jResult = Event::trigger('TaskEnd', new TaskInfo($info), true))->isSuccess()) {
-                // Helper::throwifJError(Event::trigger('TaskEnd', new TaskInfo($info), true));
                 return $jResult;
             }
+            return $this->jsonTable->success();
         } catch (\Throwable $ex) {
             return Helper::logListenException(static::class, __FUNCTION__, $ex);
         } finally {

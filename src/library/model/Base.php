@@ -31,9 +31,9 @@ class Base extends Model
     public function __construct()
     {
         // 处理表名前缀
-        $prefix = \config('system.database_prefix', null);
+        $prefix = $this->db()->getConfig('prefix');
         if (!\is_null($prefix)) {
-            $this->table = \str_replace('{$database_prefix}', $prefix, $this->table);
+            $this->table = \str_replace('{$database_prefix}_', $prefix, $this->table);
         }
         parent::__construct();
     }

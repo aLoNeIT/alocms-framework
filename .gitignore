@@ -1,3 +1,7 @@
 vendor
 .vscode
 think
+config
+.env
+src/install/install.lock
+runtime

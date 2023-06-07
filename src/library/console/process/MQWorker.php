@@ -78,7 +78,7 @@ abstract class MQWorker extends Base
                     $this->loopUninitialize();
                     if ($this->maxExecuteNum-- <= 0) {
                         $this->echoMess(lang('consumer_execute_maximum', [
-                            'maximum' => \config('system.consumer.max_execute_num'),
+                            'maximum' => \config('system.consumer.max_execute_num', 1000),
                         ]));
                         Helper::logListen(static::class, 'MQ消费者到达最大执行次数');
                         $this->kill();

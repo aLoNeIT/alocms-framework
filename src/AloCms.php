@@ -37,7 +37,7 @@ class AloCms
     {
         $this->app = $app;
         $this->app->bind('alocms', $this);
-        $this->rootPath = realpath(dirname(__DIR__)) . DIRECTORY_SEPARATOR;
+        $this->rootPath = realpath(__DIR__) . DIRECTORY_SEPARATOR;
         $this->initialize();
     }
 
@@ -48,6 +48,7 @@ class AloCms
      */
     protected function initialize(): void
     {
+        // 初始胡配置文件
         $this->initConfig();
         // 单独处理think\Request容器，如果不是\alocms\library\Request实例，则替换
         $request = $this->app->make('think\Request');
@@ -62,6 +63,14 @@ class AloCms
                 $this->app->bind($key, $value);
             }
         });
+        // 注册事件
+        $this->app->event->subscribe('\\alocms\\library\\event\\subscribe\\Task');
+        $this->app->event->listen('Log', '\\alocms\\library\\event\\listener\\Log');
+        // 初始化基础命令
+        $this->app->console->addCommands([
+            'swoole:pool' => '\\alocms\\library\\console\\SwoolePool',
+            'alocms' => '\\alocms\\install\\AloCms',
+        ]);
     }
     /**
      * 初始化配置文件

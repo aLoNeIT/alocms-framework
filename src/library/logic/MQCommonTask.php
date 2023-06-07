@@ -25,7 +25,13 @@ class MQCommonTask extends Base
     public function getMQWorker(?array $config = null): MQWorkerDriver
     {
         // 读取MQ通用任务配置
-        $config = $config ?? \config('system.mq_common_task');
+        $config = $config ?? \config('system.mq_common_task', [
+            'driver' => 'redis',
+            'queue' => [
+                // redis配置
+                'name' => 'mq_common_task',
+            ],
+        ]);
         // 配置驱动，实例化
         /** @var MQWorkerDriver $mqWorker */
         $mqWorker = MQWorkerFacade::store($config['driver']);

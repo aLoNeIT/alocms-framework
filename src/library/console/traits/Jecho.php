@@ -24,7 +24,7 @@ trait Jecho
      *
      * @var string
      */
-    protected $name = static::class;
+    protected $name = __CLASS__;
     /**
      * 获取名称
      *
