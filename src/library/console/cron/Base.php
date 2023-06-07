@@ -37,16 +37,21 @@ abstract class Base extends CommonBase
             //获取定时任务数据
             $info = $this->getInfo();
             // 如果不需要被监听，可以返回false
-            if (false !== $info) {
+            if (false !== $info && !($jResult = Event::trigger('TaskBegin', new TaskInfo($info), true))->isSuccess()) {
                 // 触发事件
-                Helper::throwifJError(Event::trigger('TaskBegin', new TaskInfo($info), true));
+                // Helper::throwifJError(Event::trigger('TaskBegin', new TaskInfo($info), true));
+                Helper::logListenError(static::class, $jResult->msg, $jResult->data);
+                return;
             }
             //执行任务处理
-            Helper::throwifJError($this->doProcess($info));
+            if (!($jResult = $this->doProcess($info))->isSuccess()) {
+                Helper::logListenError(static::class, $jResult->msg, $jResult->data);
+            }
             $this->echoMess(lang('task_end'));
             // 只有执行成功才回调任务结束
-            if (false !== $info) {
-                Helper::throwifJError(Event::trigger('TaskEnd', new TaskInfo($info), true));
+            if (false !== $info && !($jResult = Event::trigger('TaskEnd', new TaskInfo($info), true))->isSuccess()) {
+                Helper::logListenError(static::class, $jResult->msg, $jResult->data);
+                return;
             }
         } catch (\Throwable $ex) {
             Helper::logListenCritical(static::class, __FUNCTION__ . ":{$ex->getMessage()}", $ex instanceof CmsException ? $ex->getData() : $ex->getTrace());

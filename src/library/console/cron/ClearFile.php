@@ -11,15 +11,7 @@ use alocms\library\util\JsonTable;
  */
 class ClearFile extends Base
 {
-    /**
-     * 任务主体 清理文件
-     *
-     * User: bimo
-     * Date: 2020/12/22 14:05
-     *
-     * @param array $info
-     * @return JsonTable
-     */
+    /** @inheritDoc */
     public function doProcess(&$info): JsonTable
     {
         try {
@@ -29,14 +21,7 @@ class ClearFile extends Base
             }
             return $this->jsonTable->success();
         } catch (\Throwable $ex) {
-            $exception = [
-                'class' => \class_basename($ex),
-                'state' => $ex->getCode(),
-                'msg' => $ex->getMessage(),
-            ];
-            Helper::logListenCritical(static::class, '定时任务清理文件异常', $exception);
-            $this->echoMess($exception);
-            return $this->jsonTable->error($ex->getMessage());
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 }
