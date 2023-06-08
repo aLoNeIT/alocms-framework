@@ -2,7 +2,7 @@
 
 namespace app\console\task;
 
-use alocms\library\util\Helper;
+use alocms\util\Helper;
 
 class Test extends Base
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace alocms\install;
 
-use alocms\library\facade\JsonTable as JsonTableFacade;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\facade\JsonTable as JsonTableFacade;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 use think\console\Command;
 use think\console\Input;
 use think\console\input\Argument;
@@ -22,7 +22,7 @@ class AloCms extends Command
     /**
      * JsonTable对象
      *
-     * @var \alocms\library\util\JsonTable
+     * @var \alocms\util\JsonTable
      */
     protected $jsonTable = null;
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
 /**
  * 定时任务基类

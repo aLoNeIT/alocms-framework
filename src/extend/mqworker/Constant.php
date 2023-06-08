@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\extend\mqworker;
+namespace mqworker;
 
 class Constant
 {

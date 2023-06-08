@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library;
+namespace alocms;
 
 use alocms\common\util\YzbException;
 use Exception;

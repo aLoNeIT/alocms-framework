@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\util;
+namespace alocms\util;
 
 /**
  * 标准交互数据格式

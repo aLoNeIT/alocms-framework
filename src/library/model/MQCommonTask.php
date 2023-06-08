@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\model;
+namespace alocms\model;
 
 use think\model\concern\SoftDelete;
 

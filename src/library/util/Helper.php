@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\util;
+namespace alocms\util;
 
-use alocms\library\facade\JsonTable as JsonTableFacade;
+use alocms\facade\JsonTable as JsonTableFacade;
 use think\helper\Str;
 
 class Helper
@@ -348,7 +348,7 @@ class Helper
      */
     public static function logListen(string $channel, string $msg, $data = null, string $level = 'info'): void
     {
-        /** @var \alocms\library\Request $request */
+        /** @var \alocms\Request $request */
         $request = request();
         // 组装数据
         $eventData = [

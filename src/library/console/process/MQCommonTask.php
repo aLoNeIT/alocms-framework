@@ -1,10 +1,10 @@
 <?php
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
-use alocms\library\facade\ErrCode as ErrCodeFacade;
-use alocms\library\logic\MQCommonTask as MQCommonTaskLogic;
-use alocms\library\util\JsonTable;
+use alocms\facade\ErrCode as ErrCodeFacade;
+use alocms\logic\MQCommonTask as MQCommonTaskLogic;
+use alocms\util\JsonTable;
 
 /**
  * 通用任务处理

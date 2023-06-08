@@ -1,10 +1,10 @@
 <?php
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
-use alocms\library\traits\RabbitMQ as RabbitMQTrait;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\traits\RabbitMQ as RabbitMQTrait;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 use think\facade\Cache;
 use XCron\CronExpression;
 

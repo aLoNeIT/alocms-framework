@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\traits;
+namespace alocms\traits;
 
-use alocms\library\util\RabbitMQ as RabbitMQUtil;
+use alocms\util\RabbitMQ as RabbitMQUtil;
 
 trait RabbitMQ
 {

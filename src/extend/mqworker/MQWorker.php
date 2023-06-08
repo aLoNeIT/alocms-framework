@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace alocms\extend\mqworker;
+namespace mqworker;
 
-use alocms\library\util\Manager;
-use think\helper\Arr;
+use alocms\util\Manager;
 
 /**
  * MQ打工人，用于封装不同MQ之间的差异

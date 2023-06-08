@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\console;
+namespace alocms\console;
 
 use think\console\Command;
 use think\console\Input;

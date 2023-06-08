@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace alocms\extend\mqworker\driver;
+namespace mqworker\driver;
 
-use alocms\extend\mqworker\Constant;
-use alocms\extend\mqworker\Driver;
+use alocms\util\JsonTable;
+use mqworker\Constant;
+use mqworker\Driver;
 use think\cache\driver\RedisCluster;
 use think\facade\Cache;
 
@@ -23,7 +24,7 @@ class Redis extends Driver
     /**
      * redis实例句柄
      *
-     * @var \alocms\extend\think\cache\driver\RedisCluster
+     * @var \alocms\think\cache\driver\RedisCluster
      */
     protected $handler = null;
     /**
@@ -63,13 +64,8 @@ class Redis extends Driver
         }
     }
 
-    /**
-     * 发布数据
-     *
-     * @param mix $data
-     * @return array
-     */
-    public function publish($data): array
+    /** @inheritDoc */
+    public function publish($data): JsonTable
     {
         // 左进右出
         $key = $this->config['queue']['name'];
@@ -77,12 +73,8 @@ class Redis extends Driver
         $this->handler->lPush($key, $value);
         return $this->jsuccess();
     }
-    /**
-     * 消费数据
-     *
-     * @param callable $callback 回调函数
-     * @return array 返回执行结果
-     */
+
+    /** @inheritDoc */
     public function consume(callable $callback): void
     {
         $this->killed = false;

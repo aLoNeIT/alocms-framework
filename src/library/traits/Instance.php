@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\traits;
+namespace alocms\traits;
 
 /**
  * 单例模式Trait

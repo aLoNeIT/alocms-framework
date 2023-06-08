@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace alocms;
 
-use alocms\library\util\{JsonTable, ErrCode};
-use alocms\library\{Request, ExceptionHandle};
+use alocms\util\{JsonTable, ErrCode};
+use alocms\{Request, ExceptionHandle};
 use think\App;
 
 /**
@@ -50,7 +50,7 @@ class AloCms
     {
         // 初始胡配置文件
         $this->initConfig();
-        // 单独处理think\Request容器，如果不是\alocms\library\Request实例，则替换
+        // 单独处理think\Request容器，如果不是\alocms\Request实例，则替换
         $request = $this->app->make('think\Request');
         if (!$request instanceof Request) {
             $this->app->bind('think\Request', Request::class);
@@ -64,11 +64,11 @@ class AloCms
             }
         });
         // 注册事件
-        $this->app->event->subscribe('\\alocms\\library\\event\\subscribe\\Task');
-        $this->app->event->listen('Log', '\\alocms\\library\\event\\listener\\Log');
+        $this->app->event->subscribe('\\alocms\\event\\subscribe\\Task');
+        $this->app->event->listen('Log', '\\alocms\\event\\listener\\Log');
         // 初始化基础命令
         $this->app->console->addCommands([
-            'swoole:pool' => '\\alocms\\library\\console\\SwoolePool',
+            'swoole:pool' => '\\alocms\\console\\SwoolePool',
             'alocms' => '\\alocms\\install\\AloCms',
         ]);
     }

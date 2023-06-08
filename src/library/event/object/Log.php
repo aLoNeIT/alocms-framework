@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\event\object;
+namespace alocms\event\object;
 
 class Log
 {

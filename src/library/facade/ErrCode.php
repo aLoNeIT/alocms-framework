@@ -1,13 +1,13 @@
 <?php
 
-namespace alocms\library\facade;
+namespace alocms\facade;
 
-use alocms\library\util\ErrCode as ErrCodeUtil;
+use alocms\util\ErrCode as ErrCodeUtil;
 use think\Facade;
 
 /**
- * @see \alocms\library\util\ErrCode
- * @mixed \alocms\library\util\ErrCode
+ * @see \alocms\util\ErrCode
+ * @mixed \alocms\util\ErrCode
  */
 class ErrCode extends Facade
 {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\logic;
+namespace alocms\logic;
 
-use alocms\library\traits\Instance as InstanceTrait;
-use alocms\library\util\CmsException;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\traits\Instance as InstanceTrait;
+use alocms\util\CmsException;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 
 /**
  * Logic模块下基类

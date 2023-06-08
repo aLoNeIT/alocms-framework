@@ -1,12 +1,12 @@
 <?php
 
-namespace alocms\library\console\cron;
+namespace alocms\console\cron;
 
-use alocms\library\console\common\Base as CommonBase;
-use alocms\library\event\object\TaskInfo;
-use alocms\library\util\CmsException;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\console\common\Base as CommonBase;
+use alocms\event\object\TaskInfo;
+use alocms\util\CmsException;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 use think\facade\Event;
 use think\facade\Lang;
 

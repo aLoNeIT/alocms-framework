@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
-use alocms\extend\think\cache\driver\RedisCluster;
-use alocms\library\console\common\Base as CommonBase;
-use alocms\library\util\{JsonTable, Helper};
+use alocms\think\cache\driver\RedisCluster;
+use alocms\console\common\Base as CommonBase;
+use alocms\util\{JsonTable, Helper};
 use think\console\Input;
 use think\console\Output;
 use think\facade\Cache;

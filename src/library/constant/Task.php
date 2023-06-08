@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\constant;
+namespace alocms\constant;
 
 /**
  * 任务常量

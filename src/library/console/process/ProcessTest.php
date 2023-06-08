@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
-use alocms\library\util\JsonTable;
+use alocms\util\JsonTable;
 
 /**
  * process测试代码

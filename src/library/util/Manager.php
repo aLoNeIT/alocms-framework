@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\util;
+namespace alocms\util;
 
 use think\App;
 use think\helper\Arr;

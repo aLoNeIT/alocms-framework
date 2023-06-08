@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\logic;
+namespace alocms\logic;
 
-use alocms\extend\mqworker\Driver as MQWorkerDriver;
-use alocms\extend\mqworker\facade\MQWorker as MQWorkerFacade;
-use alocms\library\constant\Task as TaskConstant;
-use alocms\library\model\MQCommonTask as MQCommonTaskModel;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\mqworker\Driver as MQWorkerDriver;
+use alocms\mqworker\facade\MQWorker as MQWorkerFacade;
+use alocms\constant\Task as TaskConstant;
+use alocms\model\MQCommonTask as MQCommonTaskModel;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 
 /**
  * MQ通用任务逻辑处理

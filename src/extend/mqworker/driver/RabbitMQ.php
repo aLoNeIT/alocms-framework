@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace alocms\extend\mqworker\driver;
+namespace mqworker\driver;
 
-use alocms\extend\mqworker\Constant;
-use alocms\extend\mqworker\Driver;
-use alocms\library\util\JsonTable;
+use alocms\util\JsonTable;
+use mqworker\Constant;
+use mqworker\Driver;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPChannelClosedException;
@@ -195,7 +195,7 @@ class RabbitMQ extends Driver
         $channel->basic_consume($queue, $tag, false, false, false, false, function (AMQPMessage $msg) use ($callback) {
             $deliveryChannel = $msg->getChannel();
             // 获取消费标签
-            $this->deliveryTag = $msg->getDeliveryTag();
+            $deliveryTag = $msg->getDeliveryTag();
             // 解码数据
             $data = $this->decodeMsg($msg->body);
             try {
@@ -203,13 +203,13 @@ class RabbitMQ extends Driver
                 $result = \call_user_func($callback, $data);
                 switch ($result) {
                     case Constant::CONSUME_FAILED: // 消费失败，不重新入队
-                        $deliveryChannel->basic_reject($this->deliveryTag, false);
+                        $deliveryChannel->basic_reject($deliveryTag, false);
                         break;
                     case Constant::CONSUME_FAILED_REQUEUE: // 消费失败，重新入队
-                        $deliveryChannel->basic_reject($this->deliveryTag, true);
+                        $deliveryChannel->basic_reject($deliveryTag, true);
                         break;
                     default:
-                        $deliveryChannel->basic_ack($this->deliveryTag);
+                        $deliveryChannel->basic_ack($deliveryTag);
                         break;
                 }
             } catch (\Throwable $ex) {

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\console;
+namespace alocms\console;
 
-use alocms\library\console\process\Base as BaseProcess;
-use alocms\library\facade\JsonTable as JsonTableFacade;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\console\process\Base as BaseProcess;
+use alocms\facade\JsonTable as JsonTableFacade;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 use Swoole\Process;
 use Swoole\Table;
 use think\console\Input;
@@ -56,7 +56,7 @@ class SwoolePool extends Base
             // 测试代码
             [
                 'name' => 'ProcessTest',
-                'class' => 'alocms\library\console\process\ProcessTest',
+                'class' => 'alocms\console\process\ProcessTest',
                 'worker_num' => 1,
                 'loop_num' => 1000,
                 'sleep_time' => 1,
@@ -66,7 +66,7 @@ class SwoolePool extends Base
             // 定时任务发布者
             [
                 'name' => 'CronPublisher',
-                'class' => 'alocms\library\console\process\CronPublisher',
+                'class' => 'alocms\console\process\CronPublisher',
                 'worker_num' => 1,
                 'loop_num' => 1000,
                 'sleep_time' => 1,
@@ -76,7 +76,7 @@ class SwoolePool extends Base
             // 定时任务消费者
             [
                 'name' => 'CronConsumer',
-                'class' => 'alocms\library\console\process\CronConsumer',
+                'class' => 'alocms\console\process\CronConsumer',
                 'worker_num' => 1,
                 'loop_num' => 1000,
                 'sleep_time' => 1,
@@ -217,7 +217,7 @@ class SwoolePool extends Base
                             $this->echoMess(lang('class_not_found'));
                             continue;
                         }
-                        /** @var \alocms\library\console\process\Api $processObj */
+                        /** @var \alocms\console\process\Api $processObj */
                         $processObj = new $className(0, null, $item['name']);
                         $processObj->setIO($input, $output);
                         $processObj->mutex = \boolval($item['mutex'] ?? false);

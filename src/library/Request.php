@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace alocms\library;
+namespace alocms;
 
-use alocms\library\util\Helper;
+use alocms\util\Helper;
 
 // 应用请求对象类
 class Request extends \think\Request

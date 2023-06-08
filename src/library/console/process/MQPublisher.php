@@ -1,17 +1,17 @@
 <?php
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
-use alocms\library\constant\Task as TaskConstant;
-use alocms\library\logic\MQCommonTask as MQCommonTaskLogic;
-use alocms\library\util\JsonTable;
+use alocms\constant\Task as TaskConstant;
+use alocms\logic\MQCommonTask as MQCommonTaskLogic;
+use alocms\util\JsonTable;
 
 class MQPublisher extends Base
 {
     public function process(): JsonTable
     {
         return MQCommonTaskLogic::instance()
-            ->publish(TaskConstant::TYPE_TEST, '\alocms\library\facade\Test::say', [
+            ->publish(TaskConstant::TYPE_TEST, '\alocms\facade\Test::say', [
                 'one' => 1,
                 'two' => 2,
                 'class' => static::class,

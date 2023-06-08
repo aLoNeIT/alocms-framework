@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\event\listener;
+namespace alocms\event\listener;
 
 use think\facade\Log as LogFacade;
 

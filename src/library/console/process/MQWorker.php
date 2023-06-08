@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
-use alocms\extend\mqworker\Constant;
-use alocms\extend\mqworker\facade\MQWorker as MQWorkerFacade;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\mqworker\Constant;
+use alocms\mqworker\facade\MQWorker as MQWorkerFacade;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 
 /**
  * MQWorker打工人基类，不可实例化

@@ -1,6 +1,6 @@
 <?php
 
-namespace alocms\library\model;
+namespace alocms\model;
 
 use PDO;
 use think\db\Query;

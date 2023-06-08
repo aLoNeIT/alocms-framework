@@ -1,9 +1,9 @@
 <?php
 
-namespace alocms\library\console\cron;
+namespace alocms\console\cron;
 
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 
 /**
  * 定时清理文件

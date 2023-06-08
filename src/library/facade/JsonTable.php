@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\facade;
+namespace alocms\facade;
 
-use alocms\library\util\JsonTable as JsonTableUtil;
+use alocms\util\JsonTable as JsonTableUtil;
 use think\Facade;
 
 /**
- * @see \alocms\library\util\JsonTable
- * @mixin \alocms\library\util\JsonTable
+ * @see \alocms\util\JsonTable
+ * @mixin \alocms\util\JsonTable
  * @author aLoNe.Adams.K <alone@alonetech.com>
  * 
  * @method clear static

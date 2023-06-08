@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\logic;
+namespace alocms\logic;
 
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 
 /**
  * 文件操作逻辑类

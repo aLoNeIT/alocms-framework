@@ -1,9 +1,9 @@
 <?php
 
-namespace alocms\library\console\traits;
+namespace alocms\console\traits;
 
-use alocms\library\util\CmsException;
-use alocms\library\util\JsonTable;
+use alocms\util\CmsException;
+use alocms\util\JsonTable;
 
 /**
  * 输出相关trait

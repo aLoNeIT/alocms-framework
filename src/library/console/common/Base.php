@@ -1,8 +1,8 @@
 <?php
 
-namespace alocms\library\console\common;
+namespace alocms\console\common;
 
-use alocms\library\console\traits\Jecho;
+use alocms\console\traits\Jecho;
 
 /**
  * Console下的基类，每个模块都要继承自这里
@@ -15,7 +15,7 @@ class Base
     /**
      * JsonTable对象
      *
-     * @var \alocms\library\util\JsonTable
+     * @var \alocms\util\JsonTable
      */
     protected $jsonTable = null;
     /**

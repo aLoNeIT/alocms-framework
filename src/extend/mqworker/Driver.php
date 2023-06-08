@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace alocms\extend\mqworker;
+namespace mqworker;
 
-use alocms\library\util\Driver as DriverBase;
-use alocms\library\util\JsonTable;
+use alocms\util\Driver as DriverBase;
+use alocms\util\JsonTable;
 
 /**
  * MQWorker打工人驱动基类

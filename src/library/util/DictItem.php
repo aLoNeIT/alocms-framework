@@ -1,9 +1,9 @@
 <?php
 
-namespace alocms\library\util;
+namespace alocms\util;
 
-use alocms\library\util\Dict;
-use alocms\library\util\Helper;
+use alocms\util\Dict;
+use alocms\util\Helper;
 
 /**
  * 字典项

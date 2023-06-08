@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\event\object;
+namespace alocms\event\object;
 
 /**
  * 后台任务信息类

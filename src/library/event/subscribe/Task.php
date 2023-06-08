@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\event\subscribe;
+namespace alocms\event\subscribe;
 
-use alocms\library\event\object\TaskInfo as TaskInfoObject;
-use alocms\library\facade\ErrCode as ErrCodeFacade;
-use alocms\library\model\TaskRecord as TaskRecordModel;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\event\object\TaskInfo as TaskInfoObject;
+use alocms\facade\ErrCode as ErrCodeFacade;
+use alocms\model\TaskRecord as TaskRecordModel;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 use think\facade\Db;
 
 /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace alocms\library\util;
+namespace alocms\util;
 
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPChannelClosedException;

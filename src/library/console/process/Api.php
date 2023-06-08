@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace alocms\library\console\process;
+namespace alocms\console\process;
 
-use alocms\library\event\object\TaskInfo;
-use alocms\library\util\CacheConst;
-use alocms\library\util\CmsException;
-use alocms\library\util\Helper;
-use alocms\library\util\JsonTable;
+use alocms\event\object\TaskInfo;
+use alocms\util\CacheConst;
+use alocms\util\CmsException;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 use think\facade\Cache;
 use think\facade\Event;
 
