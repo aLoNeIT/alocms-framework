@@ -16,6 +16,14 @@ use think\console\input\Option;
 use think\console\Output;
 
 /**
+ * 方便IDE提示
+ * @property \Swoole\Table $table 存储共享数据表
+ */
+class AloCmsPool extends \Swoole\Process\Pool
+{
+}
+
+/**
  * 使用SwoolePool特性来管理维护子类
  */
 class SwoolePool extends Base
@@ -373,6 +381,7 @@ class SwoolePool extends Base
             $projectName = config('system.project_name', 'alocms');
             swoole_set_process_name("{$projectName}_swoole_master_{$pid}");
             //创建进程池对象
+            /** @var AloCmsPool $pool */
             $pool = new \Swoole\Process\Pool($totalCount);
             $pool->table = $swooleTable;
             $pool->on("WorkerStart", function ($pool, $workerId) use ($input, $output, $projectName) {
