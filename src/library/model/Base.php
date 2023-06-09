@@ -9,8 +9,6 @@ use think\Model;
 
 /**
  * Model数据基类
- * @author 王阮强 <wangruanqiang@youzhibo.cn>
- * @date 2020-10-27
  */
 class Base extends Model
 {

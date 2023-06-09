@@ -6,6 +6,7 @@ namespace alocms\util;
 
 use alocms\facade\JsonTable as JsonTableFacade;
 use think\helper\Str;
+use think\Model;
 
 class Helper
 {
@@ -71,6 +72,25 @@ class Helper
     public static function exception($msg = 'error', $state = 1, $data = null)
     {
         throw new CmsException($msg, $state, $data);
+    }
+
+    /**
+     * 快捷创建模型
+     *
+     * @param string $name 模型名称，大小写敏感
+     * @param bool $newInstance 是否创建新实例，默认false
+     * @param string $layer 模型所在的层级
+     * @return Model 返回实例化的模型对象
+     */
+    public static function model(string $name, bool $newInstance = false, string $layer = null): Model
+    {
+        $layer = $layer ?? 'common';
+        $clazz = "\\app\\{$layer}\\model\\{$name}";
+        if (!class_exists($clazz)) {
+            $clazz = "\\app\\common\\model\\{$name}";
+        }
+        $instance = app($clazz, [], $newInstance);
+        return $instance;
     }
 
     /**

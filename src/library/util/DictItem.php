@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace alocms\util;
 
 use alocms\util\Dict;
@@ -7,8 +9,6 @@ use alocms\util\Helper;
 
 /**
  * 字典项
- *
- * @author alone <alone@alonetech.com>
  */
 class DictItem
 {

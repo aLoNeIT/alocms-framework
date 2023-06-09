@@ -75,11 +75,16 @@ final class CacheConst
     /**
      * 系统任务记录
      */
-    const SYS_TASK_RECORD = 'sys:task_record';
+    const TASK_RECORD = 'task_record';
     /**
      * 日志清洁工锁
      */
     const LOG_CLEANER_LOCK = 'cleaner:lock';
+
+    /**
+     * 登陆时间
+     */
+    const ACCOUNT_LOGIN = 'account:login';
 
     /**
      * 字典缓存key
@@ -87,7 +92,7 @@ final class CacheConst
      * @param integer $id 字典id
      * @return string 返回字典缓存最终key
      */
-    public static function dictionary(int $id)
+    public static function dictionary(int $id): string
     {
         return self::DICTIONARY . ":{$id}";
     }
@@ -109,7 +114,7 @@ final class CacheConst
      * @param integer $appType 应用类型
      * @return string
      */
-    public static function dict(int $id, int $appType): string
+    public static function dict(int $id, int $appType = 1): string
     {
         return self::DICT . ":{$id}:{$appType}";
     }
@@ -120,7 +125,7 @@ final class CacheConst
      * @param integer $appType 应用类型
      * @return string 返回key
      */
-    public static function dictDefine(int $id, int $appType): string
+    public static function dictDefine(int $id, int $appType = 1): string
     {
         return self::DICT_DEFINE . ":{$id}:{$appType}";
     }
@@ -142,8 +147,19 @@ final class CacheConst
      * @param integer $type 任务类型
      * @return string 返回生成的锁名称
      */
-    public static function sysTaskRecordLock(string $name, int $type): string
+    public static function taskRecordLock(string $name, int $type): string
     {
-        return self::SYS_TASK_RECORD . ":lock:{$name}:{$type}";
+        return self::TASK_RECORD . ":lock:{$name}:{$type}";
+    }
+
+    /**
+     * 登录次数
+     *
+     * @param integer $id 字典id
+     * @return string 返回会话登录次数名称
+     */
+    public static function accountLoginTimes(string $account, int $appType = 1): string
+    {
+        return self::ACCOUNT_LOGIN . ":times:{$account}:{$appType}";
     }
 }

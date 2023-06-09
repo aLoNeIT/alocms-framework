@@ -16,7 +16,7 @@ trait Instance
      * @param array $args 构造函数所需参数
      * @return static
      */
-    public static function instance(bool $newInstance = false, array $args = [])
+    public static function instance(bool $newInstance = false, array $args = []): static
     {
         return \app(static::class, $args, $newInstance);
     }

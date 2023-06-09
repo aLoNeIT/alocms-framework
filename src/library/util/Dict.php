@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace alocms\util;
 
 use alocms\util\DictItem;
@@ -7,8 +9,8 @@ use alocms\util\Helper;
 
 /**
  * 字典类
- *
- * @author alone <alone@alonetech.com>
+ * 
+ * @property string $name 字典名称
  */
 class Dict
 {
@@ -40,7 +42,9 @@ class Dict
     {
         $this->data = $data;
     }
-
+    /**
+     * 析构函数
+     */
     public function __destruct()
     {
         $this->clear();
