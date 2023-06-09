@@ -28,7 +28,7 @@ return [
     'tag_name' => 'alocms.tag.crontask',
     'crontab' => [
         '0 * * * * *' => [
-            '\\alocms\\library\\console\\cron\\ClearFile', //文件清理
+            '\\alocms\\console\\cron\\ClearFile', //文件清理
         ],
     ],
 ];

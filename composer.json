@@ -23,5 +23,12 @@
         "topthink/framework": "6.1",
         "php-amqplib/php-amqplib": "^3.0",
         "xavier/xcron-expression": "^0.11.0"
+    },
+    "extra": {
+        "think": {
+            "services": [
+                "alocms\\service\\Initialize"
+            ]
+        }
     }
 }

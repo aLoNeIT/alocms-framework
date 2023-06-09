@@ -5,13 +5,26 @@ declare(strict_types=1);
 namespace alocms;
 
 use alocms\util\Helper;
+use think\App;
 
 // 应用请求对象类
 class Request extends \think\Request
 {
+    /**
+     * 请求参数过滤方法
+     *
+     * @var array
+     */
     protected $filter = ['htmlspecialchars'];
 
-    public function __construct()
+    /**
+     * 全局单例应用对象
+     *
+     * @var \think\App
+     */
+    protected $app = null;
+
+    public function __construct(App $app)
     {
         parent::__construct();
         // 通过配置文件读取代理服务器地址
@@ -19,6 +32,7 @@ class Request extends \think\Request
         if (!\is_null($proxyServerIp)) {
             $this->proxyServerIp = \explode(',', $proxyServerIp);
         }
+        $this->app = $app;
     }
 
     /**
@@ -31,7 +45,7 @@ class Request extends \think\Request
         $appTypeMap = config('system.app_type', [
             'admin' => 1,
         ]);
-        $appType = $appTypeMap[app('http')->getName()] ?? 3;
+        $appType = $appTypeMap[$this->app->http->getName()] ?? 1;
         return (int)$appType;
     }
     /**

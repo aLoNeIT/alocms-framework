@@ -60,7 +60,7 @@ abstract class CronBase extends Api
             'tag_name' => 'alocms.tag.crontask',
             'crontab' => [
                 '* * * * * *' => [
-                    '\\alocms\\library\\console\\cron\\CronTest', //文件清理
+                    '\\alocms\\console\\cron\\CronTest', //文件清理
                 ],
             ],
         ]);

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace alocms\console\process;
 
-use alocms\think\cache\driver\RedisCluster;
 use alocms\console\common\Base as CommonBase;
+use alocms\think\cache\driver\RedisCluster;
 use alocms\util\{JsonTable, Helper};
 use think\console\Input;
 use think\console\Output;
@@ -144,9 +144,9 @@ abstract class Base extends CommonBase
     {
         if (\time() - $this->lastTime > 300) {
             //强制重新创建新的数据库连接
-            \app()->db->connect(null, true);
+            $this->app->db->connect(null, true);
             //清理掉Cache缓存
-            \app()->delete('cache');
+            $this->app->delete('cache');
             $this->lastTime = time();
         }
     }

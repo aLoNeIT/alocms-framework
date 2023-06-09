@@ -29,10 +29,9 @@ class Base extends Command
     protected function initialize(Input $input, Output $output): void
     {
         // 处理console临时目录问题
-        $app = app();
-        $app->setRuntimePath(\runtime_path('console'));
+        $this->app->setRuntimePath(\runtime_path('console'));
         /** @var \alocms\AloCms $alocms */
-        $alocms = app('alocms');
+        $alocms = $this->app->alocms;
         //蛋疼加入多语言，突然发现没意义。。。。
         Lang::load($alocms->getRootPath('library/console/lang') . 'zh-cn.php');
     }

@@ -23,6 +23,12 @@ class Base
      * @var JsonTable
      */
     protected $jsonTable = null;
+    /**
+     * 全局单例应用对象
+     *
+     * @var \think\App
+     */
+    protected $app = null;
 
     public function __construct()
     {
@@ -36,7 +42,8 @@ class Base
      */
     protected function initialize()
     {
-        $this->jsonTable = app('JsonTable', [], true);
+        $this->app = app();
+        $this->jsonTable = $this->app->make('JsonTable', [], true);
     }
     /**
      * 演示函数

@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace alocms\service;
 
+use alocms\AloCms;
+use think\Service;
+
 /**
  * 启动服务，执行启动时必备的一些操作
  */
-class Boot
+class Initialize extends Service
 {
     /**
      * 服务注册
@@ -16,6 +19,7 @@ class Boot
      */
     public function register(): void
     {
+        $this->app->bind('alocms', AloCms::class);
     }
 
     public function boot(): void

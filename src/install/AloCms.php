@@ -44,8 +44,8 @@ class AloCms extends Command
     protected function initialize(Input $input, Output $output): void
     {
         parent::initialize($input, $output);
-        $this->jsonTable = \app('JsonTable', [], true);
-        $this->alocms = \app('alocms');
+        $this->jsonTable = $this->app->make('JsonTable', [], true);
+        $this->alocms = $this->app->alocms;
     }
     /**
      * 命令行执行主体函数

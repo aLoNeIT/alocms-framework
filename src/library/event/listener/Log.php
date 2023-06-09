@@ -34,7 +34,7 @@ class Log
     {
         try {
             LogFacade::record($param, $param['level'] ?? 'info');
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             return $this->jsonTable->error($ex->getMessage());
         }
         return $this->jsonTable->success(\class_basename(static::class));
