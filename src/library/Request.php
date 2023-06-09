@@ -24,7 +24,7 @@ class Request extends \think\Request
      */
     protected $app = null;
 
-    public function __construct(App $app)
+    public function __construct()
     {
         parent::__construct();
         // 通过配置文件读取代理服务器地址
@@ -32,7 +32,7 @@ class Request extends \think\Request
         if (!\is_null($proxyServerIp)) {
             $this->proxyServerIp = \explode(',', $proxyServerIp);
         }
-        $this->app = $app;
+        $this->app = \app();
     }
 
     /**
