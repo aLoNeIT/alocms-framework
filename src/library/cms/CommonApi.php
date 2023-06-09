@@ -10,6 +10,7 @@ use alocms\logic\Session as SessionLogic;
 use alocms\model\Base as BaseModel;
 use alocms\Request;
 use alocms\util\Dict as DictUtil;
+use alocms\util\Helper;
 use alocms\util\JsonTable;
 use alocms\util\YzbException;
 use think\facade\Db as Db;
@@ -139,7 +140,7 @@ class CommonApi extends Api
                 if (is_array($item[0])) {
                     continue;
                 }
-                $item[0] = addPrefix($item[0], $this->getDict()->prefix, $this->excludePrefix);
+                $item[0] = Helper::addPrefix($item[0], $this->getDict()->prefix, $this->excludePrefix);
             }
         }
         return $condition;
@@ -192,12 +193,12 @@ class CommonApi extends Api
             $connection = Db::connect();
             $connection->startTrans();
             try {
-                $jResult = \throwifJError($callback($this));
+                $jResult = Helper::throwifJError($callback($this));
                 $connection->commit();
                 return $jResult;
-            } catch (\Exception | \Throwable | YzbException $ex) {
+            } catch (\Throwable $ex) {
                 $connection->rollback();
-                return $this->jsonTable->message($ex->getMessage(), $ex instanceof YzbException ? $ex->getState() : 1);
+                return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
             }
         }
     }
