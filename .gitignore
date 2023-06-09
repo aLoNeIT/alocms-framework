@@ -1,7 +1,7 @@
-vendor
-.vscode
-think
-config/*
-.env
-src/install/install.lock
-runtime
+/vendor
+/.vscode
+/think
+/config
+/.env
+/src/install/install.lock
+/runtime
