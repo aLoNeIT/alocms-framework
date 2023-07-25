@@ -2,20 +2,31 @@
 
 declare(strict_types=1);
 
-namespace alocms\util;
+namespace dict\util;
 
-use alocms\util\DictItem;
 use alocms\util\Helper;
+use dict\util\DictItem;
 
 /**
- * 字典类
+ * 字典类，对应一个数据库表
  * 
+ * @property integer $id 字典id
  * @property string $name 字典名称
+ * @property string $tablename 字典对应的表名
+ * @property string $sub 字典对应的子表名
+ * @property string $prefix 字典对应的表前缀
+ * 
+ * @author alone <alone@alonetech.com>
  */
 class Dict
 {
     /**
-     * 字典数据
+     * 字典内包含的属性
+     */
+    const DICT_PROPERTIES = ['id', 'name', 'tablename', 'sub', 'prefix'];
+
+    /**
+     * 字典内的原始数据
      *
      * @var array
      */
@@ -25,7 +36,7 @@ class Dict
      *
      * @var array
      */
-    protected $item = [];
+    protected $items = [];
     /**
      * 主键字典项
      *
@@ -38,9 +49,10 @@ class Dict
      *
      * @param array $data 初始化的字典主数据，后期也可以通过load方法载入
      */
-    public function __construct(array $data = [])
+    public function __construct(array $data = [], array $items = [])
     {
-        $this->data = $data;
+        $this->load($data);
+        $this->loadItems($items);
     }
     /**
      * 析构函数
@@ -59,7 +71,13 @@ class Dict
     public function load(array $data): static
     {
         $this->clear();
-        $this->data = $data;
+        // 参数校验
+        foreach (self::DICT_PROPERTIES as $property) {
+            if (!isset($data[$property])) {
+                Helper::exception(\lang('dict_property_not_exists', ['property' => $property]));
+            }
+            $this->data[$property] = $data[$property];
+        }
         return $this;
     }
 
@@ -69,7 +87,7 @@ class Dict
      * @param array $data 字典项数据，每个元素是一个字典项对象或者字典项数据
      * @return static 返回当前对象
      */
-    public function loadItem(array $data): static
+    public function loadItems(array $data): static
     {
         foreach ($data as $index => $item) {
             $this->addItem($item);
@@ -86,10 +104,10 @@ class Dict
     public function addItem($data): static
     {
         if ($data instanceof DictItem) {
-            $this->item[$data->fieldname] = $data;
+            $this->items[$data->fieldname] = $data;
         } else {
             $item = new DictItem($this, $data);
-            $this->item[$item->fieldname] = $item;
+            $this->items[$item->fieldname] = $item;
         }
         return $this;
     }
@@ -98,81 +116,64 @@ class Dict
      * 获取指定的字典项
      *
      * @param string $fieldName 获取指定名称的字典项
-     * @param bool $prefixed 传递的字段名是否再有前缀，函数内自动补全前缀
      * @return DictItem|null 返回获取到的字典项对象，如果不存在返回null
      */
-    public function getItem(string $fieldName, bool $prefixed = false): ?DictItem
+    public function getItem(string $fieldName): ?DictItem
     {
-        $fieldName = $prefixed ? $fieldName : "{$this->prefix}{$fieldName}";
         return $this->item[$fieldName] ?? null;
     }
     /**
      * 判断是否存在指定字典项
      *
      * @param string $fieldName 字典项名称
-     * @param bool $prefixed 传递的字段名是否再有前缀，函数内自动补全前缀
      * @return boolean 返回是否存在字典项
      */
-    public function exists(string $fieldName, bool $prefixed = false): bool
+    public function exists(string $fieldName): bool
     {
-        $fieldName = $prefixed ? $fieldName : "{$this->prefix}{$fieldName}";
         return isset($this->item[$fieldName]);
     }
     /**
      * 获取所有字典项
      *
      * @param bool $prefixed 返回数组是否需要前缀
-     * @return array 返回所有字典项
+     * @return array 返回所有字典项，每个元素都是DictItem对象
      */
-    public function getItemAll(bool $prefixed = false): array
+    public function getItems(): array
     {
-        return $prefixed ? $this->item : Helper::delPrefixArr($this->item, $this->prefix);
-    }
-    /**
-     * 设置所有字典项数据
-     *
-     * @param array $data 待设置的数据，二级数组，['key'=>['fieldname'=>'value']]
-     * @param bool $prefixed key是否带有前缀，默认无前缀
-     * @return static 返回当前对象，链式操作
-     */
-    public function setItemAll(array $data, bool $prefixed = false): static
-    {
-        foreach ($data as $key => $value) {
-            $fieldName = $prefixed ? $key : "{$this->prefix}{$key}";
-            if (isset($this->item[$fieldName])) {
-                $this->item[$fieldName]->setData($value);
-            }
-        }
-        return $this;
+        return $this->item;
     }
     /**
      * 将同样的字典项数据设置到多个字典项中
      *
      * @param array $value 字典项数据
-     * @param array $fieldNames 字典项名称数组，[fieldName1,fieldName2]
-     * @param bool $prefixed key是否带有前缀，默认无前缀
+     * @param array|null $fieldNames 字典项名称数组，[fieldName1,fieldName2]
      * @return static 返回当前对象
      */
-    public function setItemAllByValue(array $value, array $fieldNames = [], bool $prefixed = false): static
+    public function setItemsValue(array $value, ?array $fieldNames = null): static
     {
-        $fieldNames = empty($fieldNames) ? \array_keys($this->item) : $fieldNames;
-        foreach ($fieldNames as $fieldName) {
-            $fieldName = $prefixed ? $fieldName : "{$this->prefix}{$fieldName}";
-            if (isset($this->item[$fieldName])) {
-                $this->item[$fieldName]->setData($value, $prefixed);
-            }
+        if (empty($fieldNames)) {
+            Helper::exception(\lang('dictitem_fields_empty'));
         }
+        $this->eachItem(function (string $key, DictItem $item) use ($value) {
+            $item->setData($value);
+        }, $fieldNames);
         return $this;
     }
     /**
      * 对每一个字典项应用回调
      *
-     * @param callable $callback 回调函数
+     * @param callable $callback 回调函数，回调参数为：string $key,DictItem $item
      * @return boolean 返回执行结果
      */
-    public function eachItem(callable $callback): bool
+    public function eachItem(callable $callback, ?array $fieldNames = null): bool
     {
-        foreach ($this->item as $key => $item) {
+        // 循环所有字典项
+        foreach ($this->items as $key => $item) {
+            // 传递了有效的字典项名称数组，但是当前字典项不在数组中，跳过
+            if (!\is_null($fieldNames) && !empty($fieldNames) && !\in_array($key, $fieldNames)) {
+                continue;
+            }
+            // 传递了有效的字典项名称数组，则只对指定的字典项执行回调
             $result = call_user_func($callback, $key, $item);
             if (false === $result) {
                 return false;
@@ -189,7 +190,7 @@ class Dict
     public function clear(): void
     {
         $this->data = [];
-        $this->item = [];
+        $this->items = [];
     }
 
     /**
@@ -199,7 +200,7 @@ class Dict
      */
     public function itemCount(): int
     {
-        return count($this->item);
+        return count($this->items);
     }
     /**
      * 魔术方法，主要用于快速获取字典项值，无需输入d_前缀
@@ -209,9 +210,10 @@ class Dict
      */
     public function __get($name)
     {
-        if (isset($this->data['d_' . strtolower($name)])) {
-            return $this->data['d_' . strtolower($name)];
+        if (isset($this->data[strtolower($name)])) {
+            return $this->data[strtolower($name)];
         }
+        Helper::exception(\lang('dict_property_not_exists', ['property' => $name]));
     }
 
     /**
@@ -224,7 +226,7 @@ class Dict
         if ($this->primaryKey) {
             return $this->primaryKey;
         } else {
-            foreach ($this->item as $key => $item) {
+            foreach ($this->items as $key => $item) {
                 if (1 === $item->pk) {
                     $this->primaryKey = $item;
                     return $this->primaryKey;
@@ -237,21 +239,16 @@ class Dict
     /**
      * 以数组形式返回字典数据
      *
-     * @param bool $prefixed 是否key带前缀
+     * @param bool $prefixed 值是否带前缀
      * @return array 返回数组形式的字典数据
      */
-    public function toArray(bool $prefixed = true): array
+    public function toArray(bool $prefixed = false): array
     {
-        $data = [];
-        foreach ($this->data as $key => $value) {
-            $data[$prefixed ? $key : Helper::delPrefix($key, 'd_')] = $value;
-        }
         $dictItem = [];
-        // 循环处理，如果key不带前缀，则删除key前缀
-        foreach ($this->item as $key => $value) {
-            $dictItem[$prefixed ? $key : Helper::delPrefix($key, $this->prefix)] = $value->toArray($prefixed);
-        }
-        return array_merge($data, [
+        $this->eachItem(function (string $key, DictItem $item) use (&$dictItem, $prefixed) {
+            $dictItem[$key] = $item->toArray($prefixed);
+        });
+        return array_merge($this->items, [
             'dict_item' => $dictItem,
         ]);
     }

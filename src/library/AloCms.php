@@ -41,6 +41,8 @@ final class AloCms
      */
     protected function initialize(): void
     {
+        // 加载语言文件
+        $this->app->lang->load($this->getRootPath('library/lang') . 'zh-cn.php');
     }
 
     /**

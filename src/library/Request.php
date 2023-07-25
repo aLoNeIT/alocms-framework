@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace alocms;
 
 use alocms\util\Helper;
-use think\App;
 
 // 应用请求对象类
 class Request extends \think\Request
@@ -28,7 +27,7 @@ class Request extends \think\Request
     {
         parent::__construct();
         // 通过配置文件读取代理服务器地址
-        $proxyServerIp = config('system.proxy_server', '127.0.0.1,::1');
+        $proxyServerIp = \config('system.proxy_server', '127.0.0.1,::1');
         if (!\is_null($proxyServerIp)) {
             $this->proxyServerIp = \explode(',', $proxyServerIp);
         }
@@ -42,7 +41,7 @@ class Request extends \think\Request
      */
     public function appType(): int
     {
-        $appTypeMap = config('system.app_type', [
+        $appTypeMap = \config('system.app_type', [
             'admin' => 1,
         ]);
         $appType = $appTypeMap[$this->app->http->getName()] ?? 1;
@@ -56,7 +55,7 @@ class Request extends \think\Request
     public function requestId(): string
     {
         if (!isset($this->requestId)) {
-            $this->requestId = getmypid() . '-' . time() . '-' . Helper::makeUUID();
+            $this->requestId = \getmypid() . '-' . \time() . '-' . Helper::makeUUID();
         }
         return $this->requestId;
     }
@@ -75,7 +74,7 @@ class Request extends \think\Request
 
     /**
      * 获取客户端IP地址
-     * @access public
+     * 
      * @return string
      */
     public function ip(): string

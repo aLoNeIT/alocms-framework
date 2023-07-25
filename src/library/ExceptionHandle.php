@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace alocms;
 
-use alocms\util\CmsException;
-use alocms\util\Helper;
+use alocms\util\{CmsException, Helper};
 use think\db\exception\DbException;
 use think\exception\Handle;
 use think\Response;
