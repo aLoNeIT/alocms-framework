@@ -19,16 +19,18 @@ interface Processor
      *
      * @param integer $id 字典id
      * @param integer $appType 应用类型
+     * @param boolean $newInstance 是否返回新的对象
      * @return DictUtil 返回字典对象
      */
-    public function getDict(int $id, int $appType = 0): DictUtil;
+    public function getDict(int $id, int $appType = 0, bool $newInstance = false): DictUtil;
     /**
      * 获取模型
      *
      * @param DictUtil $dict 字典类
+     * @param string $module 模块名
      * @return Model 返回模型对象
      */
-    public function getModel(DictUtil $dict): Model;
+    public function getModel(DictUtil $dict, string $module = 'common'): Model;
     /**
      * 获取表前缀
      *

@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace dict;
 
-use alocms\facade\JsonTable as JsonTableFacade;
 use alocms\traits\Instance;
 use alocms\util\CmsException;
 use alocms\util\Helper;
-use alocms\util\JsonTable;
 use dict\interface\Processor as ProcessorInterface;
 use dict\util\Dict as DictUtil;
 use dict\util\DictItem as DictItemUtil;
@@ -50,11 +48,12 @@ class Dict
      * 设置字典处理器
      *
      * @param ProcessorInterface $processor 实现了字典处理器的对象
-     * @return void
+     * @return static 当前对象
      */
-    public function setProcessor(ProcessorInterface $processor)
+    public function setProcessor(ProcessorInterface $processor): static
     {
         $this->processor = $processor;
+        return $this;
     }
     /**
      * 获取字典对象
@@ -80,14 +79,14 @@ class Dict
      * @param array $data 数据
      * @param boolean $batch 是否批量返回错误信息
      *
-     * @return JsonTable
+     * @return boolean|string|array
      */
-    public function checkData(DictUtil $dict, int $curd, array $data, bool $batch = false): JsonTable
+    public function checkData(DictUtil $dict, int $curd, array $data, bool $batch = false): bool|string|array
     {
-        $error = []; // 错误信息
+        $errors = []; // 错误信息
         // 遍历处理每一个字典项
         $dict->eachItem(
-            function (string $fieldName, DictItemUtil $item) use ($curd, $data, $batch, &$error) {
+            function (string $fieldName, DictItemUtil $item) use ($curd, $data, $batch, &$errors) {
                 try {
                     // 主键跳过，外显字段跳过
                     if (($item->pk && $item->autoed) || ($item->show_dict > 0)) {
@@ -154,30 +153,17 @@ class Dict
                         }
                     }
                 } catch (CmsException $ex) {
-                    // 针对YzbException做处理，批量时只记录不退出
+                    // 针对CmsException做处理，批量时只记录不退出
+                    $errors[] = $ex->getMessage();
                     if (false === $batch) {
-                        $error = [
-                            'state' => $ex->getCode(),
-                            'msg' => $ex->getMessage(),
-                            'data' => $ex->getData(),
-                        ];
                         return false;
-                    } else {
-                        $error[$ex->getCode()] = $ex->getMessage();
                     }
                 }
             }
         );
-
-        return empty($error)
-            ? JsonTableFacade::success()
-            : ($batch
-                ? JsonTableFacade::error('error', 1, $error)
-                : JsonTableFacade::error(
-                    $error['msg'],
-                    $error['state'],
-                    $error['data']
-                ));
+        return empty($errors)
+            ? true
+            : ($batch ? $errors : $errors[0]);
     }
 
     /**
@@ -186,52 +172,126 @@ class Dict
      * @param DictUtil $dict 字典id或字典对象
      * @param array $condition 表达式
      * @param array|null $order 排序，若非null则覆盖字典的排序配置
-     * @param string  $fuzzy 模糊查询内容
-     * @param integer $currPage 查询的页码
-     * @param integer $pageNum 每页数据量，为0则代表不分页
+     * @param string|null  $fuzzy 模糊查询内容
      * @param integer $appType 应用类型
      *
-     * @return JsonTable
+     * @return Query 返回Query对象，调用方自行处理分页问题
      */
     public function select(
         DictUtil $dict,
         array $condition = [],
         ?array $order = null,
-        string $fuzzy = null,
-        int $currPage = 1,
-        int $pageNum = 20,
-        int $appType = 0
-    ): JsonTable {
-        try {
-            $query = $this->build($dict, 1, $condition, $order, $fuzzy, $appType);
-            // 该条件的总数据量
-            $totalCount = $query->count();
-            $totalPage = 1; // 默认只有一页
-            // 查询指定数据
-            if (0 !== $pageNum) {
-                // 分页查匹配的数据
-                $totalPage = \max(ceil($totalCount / $pageNum), $totalPage); // 向上取整获取总页码
-                $currPage = min($currPage, $totalPage);
-                $query = $query->limit(($currPage - 1) * $pageNum, $pageNum);
-            }
-            $data = $query->select();
-            // 返回查询结果
-            return JsonTableFacade::success(
-                [
-                    'curr' => $currPage,
-                    'page' => $totalPage,
-                    'num' => $pageNum,
-                    'count' => $totalCount,
-                ],
-                $data->toArray()
-            );
-        } catch (\Throwable $ex) {
-            return Helper::logListenException(static::class, __FUNCTION__, $ex);
-        }
+        ?string $fuzzy = null
+    ): Query {
+        $query = $this->build($dict, 1, $condition, $order, $fuzzy);
+        return $query;
     }
 
     /**
-     * 返回构建后的Query对象
+     * 通过主键查询单条数据
+     *
+     * @param DictUtil $dict 字典对象
+     * @param string|integer $id 主键值
+     * @param array|null $order 排序，若非null则覆盖字典的排序配置
+     * @param integer $appType 应用类型
+     *
+     * @return Query
+     */
+    public function findByPrimaryKey(DictUtil $dict, string|int $id, ?array $order = null): Query
+    {
+        // 获取主数据
+        $pk = $dict->getPrimaryKey();
+        if (\is_null($pk)) {
+            Helper::exception(\lang('dict_primarykey_not_exists'));
+        }
+        // 查询数据
+        return $this->find(
+            $dict,
+            [
+                $pk->fieldname => $id,
+            ],
+            $order
+        );
+    }
+
+    /**
+     * 查询单条数据
+     *
+     * @param DictUtil $dict 字典id或字典对象
+     * @param array $condition 表达式
+     * @param array|null $order 排序，若非null则覆盖字典的排序配置
+     *
+     * @return Query
+     */
+    public function find(DictUtil $dict, array $condition = [], ?array $order = null): Query
+    {
+        $query = $this->build($dict, 8, $condition, $order);
+        return $query;
+    }
+
+    /**
+     * 更新数据
+     *
+     * @param DictUtil $dict 字典id或字典对象
+     * @param array $data 待更新的数据
+     * @param array $condition 更新条件表达式
+     *
+     * @return Query
+     * @throws CmsException
+     */
+    public function update(DictUtil $dict, array $data, array $condition = []): Query
+    {
+        // 数据校验
+        $batch = false;
+        $result = $this->checkData($dict, 4, $data, $batch);
+        if (true !== $result) {
+            $batch ? Helper::exception(\lang('dict_checkdata_fail'), 1, $result)
+                : Helper::exception($result);
+        }
+        // 获取处理后的query对象
+        $query = $this->build($dict, 4, $condition);
+        return $query;
+    }
+
+    /**
+     * 创建数据
+     *
+     * @param DictUtil $dict 字典id或字典对象
+     * @param array $data 新建的数据
+     *
+     * @return Query
+     * @throws CmsException
+     */
+    public function save(DictUtil $dict, array $data = []): Query
+    {
+        // 数据校验
+        $batch = false;
+        $result = $this->checkData($dict, 4, $data, $batch);
+        if (true !== $result) {
+            $batch ? Helper::exception(\lang('dict_checkdata_fail'), 1, $result)
+                : Helper::exception($result);
+        }
+        // 获取处理后的query对象
+        $query = $this->build($dict, 2);
+        return $query;
+    }
+
+    /**
+     * 删除数据
+     *
+     * @param DictUtil $dict 字典id或字典对象
+     * @param array $condition 表达式
+     *
+     * @return Query
+     */
+    public function delete($dict, array $condition = []): Query
+    {
+        $query = $this->build($dict, 16, $condition);
+        return $query;
+    }
+
+    /**
+     * 构建数据库查询
      *
      * @param DictUtil $dict 字典id或字典对象
      * @param integer $curd 构建类型，1新增；2修改；4读取；8删除
@@ -247,23 +307,22 @@ class Dict
         int $curd,
         array $condition = [],
         ?array $order = null,
-        ?string $fuzzy = null,
-        int $appType = 0
+        ?string $fuzzy = null
     ): Query {
         // 获取字典对应模型
-        $model = $this->processor->getModel($dict, $appType);
+        $model = $this->processor->getModel($dict);
         // 获取表前缀
         $tablePrefix = $this->processor->getTablePrefix();
         $tableName = $tablePrefix . parse_name($dict->tablename);
         $fieldPrefix = $dict->prefix;
-        $dictItemAll = $dict->getItems();
+        $dictItems = $dict->getItems();
         $fields = []; //待查询的字段列表
         $joins = []; // 关联查询的信息
         $joinDicts = []; // 关联查询的表字典信息
         $orders = []; // 排序数据
         $fuzzyCondition = [];
 
-        foreach ($dictItemAll as $key => $item) {
+        foreach ($dictItems as $key => $item) {
             // 字段别名处理，去除字段前缀
             $fieldNameAlias = (0 === strpos($item->fieldname, $fieldPrefix)) ? Helper::delPrefix(
                 $item->fieldname,

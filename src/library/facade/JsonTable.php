@@ -12,11 +12,11 @@ use think\Facade;
  * @mixin \alocms\util\JsonTable
  * @author aLoNe.Adams.K <alone@alonetech.com>
  * 
- * @method clear static
- * @method getData($state=0,$msg='success',$data=[]) static
- * @method getJson($state=0,$msg='success',$data=[]) static
- * @method success($msg='success',$data=[]) static
- * @method error($state=1,$msg='error',$data=[]) static
+ * @method static void clear()
+ * @method static string toJson()
+ * @method static array toArray()
+ * @method static JsonTableUtil success($msg = 'success', $data = null)
+ * @method static JsonTableUtil error($msg = 'error', $state = 1, $data = null)
  */
 class JsonTable extends Facade
 {

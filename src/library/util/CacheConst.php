@@ -65,6 +65,10 @@ final class CacheConst
      */
     const DICT = 'dict';
     /**
+     * 通过表名获取字典的缓存前缀
+     */
+    const DICT_TABLENAME = 'dict:tablename';
+    /**
      * 字典定义数据
      */
     const DICT_DEFINE = 'dict:define';
@@ -112,12 +116,25 @@ final class CacheConst
      *
      * @param integer $id 字典id
      * @param integer $appType 应用类型
-     * @return string
+     * @return string 返回key
      */
-    public static function dict(int $id, int $appType = 1): string
+    public static function dict(int $id, int $appType = 0): string
     {
         return self::DICT . ":{$id}:{$appType}";
     }
+    /**
+     * 获取字典表名的缓存键名
+     *
+     * @param string $tableName 表名
+     * @param integer $appType 应用类型
+     * @return string 返回key
+     */
+    public static function dictTableName(string $tableName, int $appType = 0): string
+    {
+        return self::DICT_TABLENAME . ":{$tableName}:{$appType}";
+    }
+
+
     /**
      * 获取存储字典定义的键名
      *
