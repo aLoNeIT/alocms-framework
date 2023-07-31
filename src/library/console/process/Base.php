@@ -144,7 +144,7 @@ abstract class Base extends CommonBase
     {
         if (\time() - $this->lastTime > 300) {
             //强制重新创建新的数据库连接
-            $this->app->db->connect(null, true);
+            $this->app->delete('db');
             //清理掉Cache缓存
             $this->app->delete('cache');
             $this->lastTime = time();
