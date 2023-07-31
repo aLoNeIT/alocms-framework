@@ -94,11 +94,7 @@ class SwoolePool extends Base
         ]
     ];
 
-    /**
-     * 命令行配置
-     *
-     * @return void
-     */
+    /** @inheritDoc */
     protected function configure(): void
     {
         $this->setName('swoole:pool')->setDescription('Create Swoole background processpool for task.')->setHelp('help')
@@ -108,13 +104,7 @@ class SwoolePool extends Base
             ->addOption('signum', null, Option::VALUE_REQUIRED, 'process signal signum', 15)
             ->addOption('extra', null, Option::VALUE_REQUIRED, 'extra params');
     }
-    /**
-     * 命令行执行主体函数
-     *
-     * @param Input $input 输入对象
-     * @param Output $output 输出对象
-     * @return integer 返回执行结果，0成功，非0失败
-     */
+    /** @inheritDoc */
     protected function execute(Input $input, Output $output): int
     {
         //获取执行指令
@@ -151,13 +141,7 @@ class SwoolePool extends Base
         }
         return $jResult->state;
     }
-    /**
-     * 对象初始化调用
-     *
-     * @param Input $input 输入对象
-     * @param Output $output 输出对象
-     * @return void
-     */
+    /** @inheritDoc */
     protected function initialize(Input $input, Output $output): void
     {
         parent::initialize($input, $output);

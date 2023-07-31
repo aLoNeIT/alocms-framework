@@ -39,6 +39,11 @@ class Dict extends Base implements DictProcessorInterface
      */
     protected $itemName = [];
 
+    protected function initialize()
+    {
+        DictFacade::setProcessor($this);
+    }
+
     /** @inheritDoc */
     public function getDict(int $id, int $appType = 0, bool $newInstance = false): DictUtil
     {
@@ -238,7 +243,7 @@ class Dict extends Base implements DictProcessorInterface
                 $data->toArray()
             );
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -267,7 +272,7 @@ class Dict extends Base implements DictProcessorInterface
             }
             return $this->jsonTable->successByData($data->toArray());
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -293,7 +298,7 @@ class Dict extends Base implements DictProcessorInterface
             }
             return $this->jsonTable->successByData($data->toArray());
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -328,10 +333,10 @@ class Dict extends Base implements DictProcessorInterface
             $model->save($data);
             return $this->jsonTable->successByData(Helper::delPrefixArr($model->toArray(), $dict->prefix));
         } catch (PDOException $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
             return ErrCodeFacade::getJError(21);
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -363,10 +368,10 @@ class Dict extends Base implements DictProcessorInterface
             $model->save($data);
             return $this->jsonTable->success($model->getKey(), Helper::delPrefixArr($model->toArray(), $dict->prefix));
         } catch (PDOException $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
             return ErrCodeFacade::getJError(21);
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -391,10 +396,10 @@ class Dict extends Base implements DictProcessorInterface
             }
             return $model->delete() ? $this->jsonTable->success() : ErrCodeFacade::getJError(23);
         } catch (PDOException $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
             return ErrCodeFacade::getJError(21);
         } catch (\Exception $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 }

@@ -19,14 +19,8 @@ class Base extends Command
      */
     protected $config = [];
 
-    /**
-     * 初始化
-     *
-     * @param Input $input 输入对象
-     * @param Output $output 输出对象
-     * @return void
-     */
-    protected function initialize(Input $input, Output $output): void
+    /** @inheritDoc */
+    protected function initialize(Input $input, Output $output)
     {
         // 处理console临时目录问题
         $this->app->setRuntimePath(\runtime_path('console'));

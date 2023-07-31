@@ -23,13 +23,13 @@ class Initialize extends Service
         // 绑定AloCms类
         $this->app->bind('alocms', AloCms::class);
         // 注册一些系统内使用的逻辑类
-        $providers = [
-            'SessionLogic' => SessionLogic::class
-        ];
-        foreach ($providers as $name => $class) {
-            if ($this->app->has($name)) continue;
-            $this->app->bind($name, $class);
-        }
+        // $providers = [
+        //     'SessionLogic' => SessionLogic::class
+        // ];
+        // foreach ($providers as $name => $class) {
+        //     if ($this->app->has($name)) continue;
+        //     $this->app->bind($name, $class);
+        // }
     }
 
     public function boot(): void

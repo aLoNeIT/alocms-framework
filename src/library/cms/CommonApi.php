@@ -8,13 +8,10 @@ use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\logic\Dict as DictLogic;
 use alocms\logic\Session as SessionLogic;
 use alocms\model\Base as BaseModel;
-use alocms\Request;
-use alocms\util\Dict as DictUtil;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
-use alocms\util\YzbException;
+use dict\util\Dict as DictUtil;
 use think\facade\Db as Db;
-use think\Model;
 
 /**
  * 通用Api基类
@@ -122,7 +119,7 @@ class CommonApi extends Api
      */
     protected function getModel(): BaseModel
     {
-        return DictLogic::instance()->getModel($this->dictId);
+        return DictLogic::instance()->getModel($this->dict);
     }
 
     /**
