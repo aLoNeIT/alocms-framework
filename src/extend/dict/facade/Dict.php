@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace dict\facade;
+namespace alocms\extend\dict\facade;
 
-use dict\Dict as DictUtil;
+use alocms\extend\dict\Dict as DictUtil;
 use think\Facade;
 
 /**

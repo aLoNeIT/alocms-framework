@@ -8,8 +8,8 @@ use alocms\constant\Task as TaskConstant;
 use alocms\model\MQCommonTask as MQCommonTaskModel;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
-use mqworker\Driver as MQWorkerDriver;
-use mqworker\facade\MQWorker as MQWorkerFacade;
+use alocms\extend\mqworker\Driver as MQWorkerDriver;
+use alocms\extend\mqworker\facade\MQWorker as MQWorkerFacade;
 
 /**
  * MQ通用任务逻辑处理

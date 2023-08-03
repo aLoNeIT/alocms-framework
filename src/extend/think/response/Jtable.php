@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace think\response;
+namespace alocms\extend\think\response;
 
 use alocms\util\JsonTable;
 use think\Cookie;

@@ -53,7 +53,11 @@ class SwoolePool extends Base
      * @var string
      */
     protected $pidFile = '';
-
+    /**
+     * 配置信息
+     *
+     * @var array
+     */
     protected $config = [
         'temp_path' => '', //运行期临时目录
         'size' => 32, //该值不能小于task总数，且必须为2的倍数
@@ -142,7 +146,7 @@ class SwoolePool extends Base
         return $jResult->state;
     }
     /** @inheritDoc */
-    protected function initialize(Input $input, Output $output): void
+    protected function initialize(Input $input, Output $output)
     {
         parent::initialize($input, $output);
         $config = \config('swoole_pool', []);
@@ -236,12 +240,11 @@ class SwoolePool extends Base
                     }
                 }
             }
-        } catch (\Exception $ex) {
-            $jResult->error($ex->getMessage());
+        } catch (\Throwable $ex) {
             $this->echoMess(lang('process_is_excepting', [
                 'content' => $ex->getMessage(),
             ]), 1);
-            Helper::logListenError(static::class, __FUNCTION__ . ":{$ex->getMessage()}", $ex->getTrace());
+            $jResult = Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
         return $jResult;
     }
@@ -303,12 +306,11 @@ class SwoolePool extends Base
                     'content' => 'pid文件不存在',
                 ]), 1);
             }
-        } catch (\Exception $ex) {
+        } catch (\Throwable $ex) {
             $this->echoMess(lang('process_is_excepting', [
                 'content' => $ex->getMessage(),
             ]), 1);
-            $jResult->error($ex->getMessage());
-            Helper::logListenError(static::class, __FUNCTION__ . ":{$ex->getMessage()}", $ex->getTrace());
+            $jResult = Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
         return $jResult;
     }
@@ -435,7 +437,7 @@ class SwoolePool extends Base
                             }
                         }
                     }
-                } catch (\Exception $ex) {
+                } catch (\Throwable $ex) {
                     $this->echoMess(lang('worker_is_excepting', [
                         'workerId' => $workerId,
                         'content' => $ex->getMessage(),
@@ -460,7 +462,7 @@ class SwoolePool extends Base
                     $pool->table->set($workerId, [
                         'state' => 0,
                     ]);
-                } catch (\Exception $ex) {
+                } catch (\Throwable $ex) {
                     $this->echoMess(lang('worker_is_excepting', [
                         'workerId' => $workerId,
                         'content' => $ex->getMessage(),
@@ -485,16 +487,15 @@ class SwoolePool extends Base
             $this->echoMess(lang('process_is_excepting', [
                 'content' => $ex->getMessage(),
             ]), 1);
-            Helper::logListenCritical(static::class, __FUNCTION__ . "{$ex->getMessage()}", $ex->getTrace());
-            return $jResult->error($ex->getMessage());
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
     /**
      * 格式化输出内容
      *
-     * @param string $msg 消息体
-     * @param integer $state 状态码
-     * @param array $table 扩展数据
+     * @param mixed $msg 消息体
+     * @param string|integer $state 状态码
+     * @param mixed $table 扩展数据
      * @return void
      */
     protected function echoMess($msg, $state = 0, $table = []): void

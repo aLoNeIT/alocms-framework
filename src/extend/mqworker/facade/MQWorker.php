@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace mqworker\facade;
+namespace alocms\extend\mqworker\facade;
 
-use mqworker\MQWorker as MQWorkerUtil;
+use alocms\extend\mqworker\MQWorker as MQWorkerUtil;
 use think\Facade;
 
 class MQWorker extends Facade

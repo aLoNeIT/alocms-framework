@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace dict\util;
+namespace alocms\extend\dict\util;
 
 use alocms\util\Helper;
-use dict\util\DictItem;
+use alocms\extend\dict\util\DictItem;
 
 /**
  * 字典类，对应一个数据库表

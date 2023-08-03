@@ -11,9 +11,14 @@ use alocms\util\JsonTable;
  */
 class MQCommonTask extends MQWorker
 {
-
+    /**
+     * 内部缓存数据所使用的key名
+     *
+     * @var string
+     */
     protected $key = 'MQCommonTask';
 
+    /** @inheritDoc */
     protected function initialize(): void
     {
         // 读取MQ通用任务配置
@@ -30,12 +35,7 @@ class MQCommonTask extends MQWorker
         $this->mqWorker->setQueueConfig($config['queue']);
     }
 
-    /**
-     * 处理任务
-     *
-     * @param array $data 保存的数据
-     * @return bool|array 成功返回true，失败返回JsonTable
-     */
+    /** @inheritDoc */
     protected function doProcess(&$data): JsonTable
     {
         if (!\is_array($data)) {

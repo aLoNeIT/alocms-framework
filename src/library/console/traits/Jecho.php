@@ -24,7 +24,7 @@ trait Jecho
      *
      * @var string
      */
-    protected $name = __CLASS__;
+    protected $name = static::class;
     /**
      * 获取名称
      *
@@ -34,8 +34,12 @@ trait Jecho
     {
         return $this->name;
     }
-
-    public function getWorkerId(): string
+    /**
+     * 获取工作进程序号
+     *
+     * @return integer
+     */
+    public function getWorkerId(): int
     {
         return $this->workerId;
     }

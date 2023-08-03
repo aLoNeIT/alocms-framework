@@ -96,7 +96,7 @@ abstract class Base extends CommonBase
     /**
      * 任务执行前的操作，主要用于每次任务执行前的初始化
      *
-     * @param mix $data 本次处理的任务数据
+     * @param mixed $data 本次处理的任务数据
      * @param array $info 本次任务信息
      * @return void
      */

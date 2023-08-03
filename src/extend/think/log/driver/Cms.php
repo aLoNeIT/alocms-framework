@@ -1,9 +1,12 @@
 <?php
 
-namespace think\log\driver;
+namespace alocms\extend\think\log\driver;
 
 use think\log\driver\File;
 
+/**
+ * Cms系统日志驱动
+ */
 class Cms extends File
 {
 
@@ -53,7 +56,6 @@ class Cms extends File
         } elseif ($this->config['max_files']) {
             $name = date('Ymd');
         } else {
-            //$name = date('d');
             $name = '';
         }
 

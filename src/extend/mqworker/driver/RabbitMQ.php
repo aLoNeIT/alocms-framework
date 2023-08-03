@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace mqworker\driver;
+namespace alocms\extend\mqworker\driver;
 
 use alocms\util\JsonTable;
-use mqworker\Constant;
-use mqworker\Driver;
+use alocms\extend\mqworker\Constant;
+use alocms\extend\mqworker\Driver;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Exception\AMQPChannelClosedException;

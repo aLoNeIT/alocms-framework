@@ -1,6 +1,6 @@
 <?php
 
-namespace app\console\task;
+namespace alocms\console\task;
 
 use alocms\util\Helper;
 

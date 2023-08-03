@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace dict;
+namespace alocms\extend\dict;
 
+use alocms\extend\dict\interface\Processor as ProcessorInterface;
+use alocms\extend\dict\util\Dict as DictUtil;
+use alocms\extend\dict\util\DictItem as DictItemUtil;
 use alocms\traits\Instance;
 use alocms\util\CmsException;
 use alocms\util\Helper;
-use dict\interface\Processor as ProcessorInterface;
-use dict\util\Dict as DictUtil;
-use dict\util\DictItem as DictItemUtil;
 use think\db\Query;
 use think\helper\Str;
 

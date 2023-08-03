@@ -141,7 +141,7 @@ abstract class Api extends Base
     /**
      * 执行任务
      *
-     * @param mix $data 任务数据
+     * @param mixed $data 任务数据
      * @param array $info 任务信息，引用传递
      * @return JsonTable 返回执行结果，true为成功，array为错误数据
      */
@@ -150,7 +150,7 @@ abstract class Api extends Base
     /**
      * 获取任务信息
      *
-     * @return array|bool 任务信息，返回false代表不需要记录任务信息
+     * @return mixed 任务信息，返回false代表不需要记录任务信息
      */
     protected function getInfo()
     {
@@ -163,7 +163,7 @@ abstract class Api extends Base
     /**
      * 获取任务数据
      *
-     * @return mix 获取任务失败返回false，获取成功返回数组
+     * @return mixed 获取任务失败返回false，获取成功返回数组
      */
     protected function getTask()
     {

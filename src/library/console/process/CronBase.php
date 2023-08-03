@@ -30,11 +30,7 @@ abstract class CronBase extends Api
      */
     protected $config = [];
 
-    /**
-     * 初始化
-     *
-     * @return void
-     */
+    /** @inheritDoc */
     protected function initialize(): void
     {
         parent::initialize();
@@ -70,7 +66,7 @@ abstract class CronBase extends Api
      * 获取锁名称
      *
      * @param string $class 完整类名
-     * @return string
+     * @return string 返回处理后的锁名称
      */
     protected function getLockName($class): string
     {
@@ -85,7 +81,7 @@ abstract class CronBase extends Api
     /**
      * 获取队列名称
      *
-     * @return string
+     * @return string 返回队列名称
      */
     protected function getQueueName(): string
     {

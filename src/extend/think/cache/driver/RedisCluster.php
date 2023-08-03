@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace think\cache\driver;
+namespace alocms\extend\think\cache\driver;
 
 use think\cache\driver\Redis;
 

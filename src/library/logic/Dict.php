@@ -11,10 +11,10 @@ use alocms\util\CacheConst;
 use alocms\util\CmsException;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
-use dict\facade\Dict as DictFacade;
-use dict\interface\Processor as DictProcessorInterface;
-use dict\util\Dict as DictUtil;
-use dict\util\DictItem as DictItemUtil;
+use alocms\extend\dict\facade\Dict as DictFacade;
+use alocms\extend\dict\interface\Processor as DictProcessorInterface;
+use alocms\extend\dict\util\Dict as DictUtil;
+use alocms\extend\dict\util\DictItem as DictItemUtil;
 use think\db\exception\PDOException;
 use think\Model;
 

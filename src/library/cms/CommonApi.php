@@ -10,7 +10,7 @@ use alocms\logic\Session as SessionLogic;
 use alocms\model\Base as BaseModel;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
-use dict\util\Dict as DictUtil;
+use alocms\extend\dict\util\Dict as DictUtil;
 use think\facade\Db as Db;
 
 /**

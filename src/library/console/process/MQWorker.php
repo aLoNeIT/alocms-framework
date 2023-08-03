@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace alocms\console\process;
 
-use alocms\mqworker\Constant;
-use alocms\mqworker\facade\MQWorker as MQWorkerFacade;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
+use alocms\extend\mqworker\Constant;
+use alocms\extend\mqworker\facade\MQWorker as MQWorkerFacade;
 
 /**
  * MQWorker打工人基类，不可实例化

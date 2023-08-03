@@ -1,6 +1,6 @@
 <?php
 
-namespace mqworker;
+namespace alocms\extend\mqworker;
 
 use alocms\util\CmsException;
 

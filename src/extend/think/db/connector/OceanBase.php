@@ -2,10 +2,14 @@
 
 declare(strict_types=1);
 
-namespace think\db\connector;
+namespace alocms\extend\think\db\connector;
 
+use alocms\util\Helper;
 use think\db\connector\Mysql;
 
+/**
+ * 阿里云OB数据库连接处理
+ */
 class OceanBase extends Mysql
 {
     /**
@@ -17,7 +21,7 @@ class OceanBase extends Mysql
      * @return PDO
      * @throws Exception
      */
-    public function connect(array $config = [], $linkNum = 0, $autoConnection = false)
+    public function connect(array $config = [], $linkNum = 0, $autoConnection = false): \PDO
     {
         if (isset($this->links[$linkNum])) {
             return $this->links[$linkNum];
@@ -30,14 +34,14 @@ class OceanBase extends Mysql
         }
 
         //对密码进行解密
-        if (isset($config['password'])) {
-            $config['password'] = \aes_decrypt($config['password']);
+        if (isset($config['password']) && isset($config['algorithm']) && is_callable($config['alogorithm'])) {
+            $config['password'] = call_user_func($config['alogorithm'], $config['password']);
         }
         //执行父类方法
         return parent::connect($config, $linkNum, $autoConnection);
     }
-
-    protected function supportSavepoint()
+    /** @inheritDoc */
+    protected function supportSavepoint(): bool
     {
         return false;
     }

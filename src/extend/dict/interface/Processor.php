@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace dict\interface;
+namespace alocms\extend\dict\interface;
 
-use dict\util\Dict as DictUtil;
+use alocms\extend\dict\util\Dict as DictUtil;
 use think\Model;
 
 /**

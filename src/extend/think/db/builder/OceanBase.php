@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace think\db\builder;
+namespace alocms\extend\think\db\builder;
 
 use think\db\builder\Mysql;
 

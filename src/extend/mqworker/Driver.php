@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace mqworker;
+namespace alocms\extend\mqworker;
 
 use alocms\util\Driver as DriverBase;
 use alocms\util\JsonTable;

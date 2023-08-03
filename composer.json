@@ -12,10 +12,8 @@
     "autoload": {
         "psr-4": {
             "alocms\\": "src/library",
-            "alocms\\install\\": "src/install"
-        },
-        "psr-0": {
-            "": "src/extend"
+            "alocms\\install\\": "src/install",
+            "alocms\\extend\\": "src/extend"
         }
     },
     "require": {
