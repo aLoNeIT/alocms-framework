@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\cms;
+namespace alocms\controller;
 
 use think\App;
 use think\exception\ValidateException;
@@ -52,7 +52,7 @@ abstract class BaseController
     }
 
     // 初始化
-    protected function initialize()
+    protected function initialize(): void
     {
     }
 
@@ -77,6 +77,7 @@ abstract class BaseController
                 [$validate, $scene] = explode('.', $validate);
             }
             $class = false !== strpos($validate, '\\') ? $validate : $this->app->parseClass('validate', $validate);
+            /** @var Validate $v */
             $v     = new $class();
             if (!empty($scene)) {
                 $v->scene($scene);

@@ -15,6 +15,14 @@ use think\App;
 final class AloCms
 {
     /**
+     * 配置信息，仅做展示用，业务层需要自行配置
+     */
+    private $config = [
+        'dynamic_api' => null,
+    ];
+
+
+    /**
      * 基础路径
      * @var string
      */

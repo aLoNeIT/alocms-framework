@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace alocms\cms;
+namespace alocms\controller;
 
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\util\JsonTable;
 use think\facade\View as ViewFacade;
-
 
 /**
  * Api接口基类

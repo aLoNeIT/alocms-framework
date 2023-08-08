@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace alocms\cms;
+namespace alocms\controller;
 
+use alocms\extend\dict\util\Dict as DictUtil;
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\logic\Dict as DictLogic;
 use alocms\logic\Session as SessionLogic;
 use alocms\model\Base as BaseModel;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
-use alocms\extend\dict\util\Dict as DictUtil;
 use think\facade\Db as Db;
 
 /**
@@ -80,10 +80,10 @@ class CommonApi extends Api
     /**
      * @inheritDoc
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         parent::initialize();
-        $this->sessionLogic = SessionLogic::instance();
+        $this->sessionLogic = $this->app->get('SessionLogic');
     }
 
     /**

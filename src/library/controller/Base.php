@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace alocms\cms;
+namespace alocms\controller;
 
 use alocms\util\JsonTable;
 
@@ -22,7 +22,7 @@ class Base extends BaseController
      *
      * @return void
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->jsonTable = $this->app->make('JsonTable', [], true);
     }
