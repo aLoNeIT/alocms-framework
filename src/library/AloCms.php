@@ -18,9 +18,15 @@ final class AloCms
      * 配置信息，仅做展示用，业务层需要自行配置
      */
     private $config = [
-        'dynamic_api' => null,
-    ];
+        'route' => [ // 路由配置
+            'dynamic_controller' => '\\alocms\\controller\\DynamicApi', // 动态控制器配置，null表示禁用，非null表示指定控制器名
+            'dict_controller' => '\\alocms\\controller\\Dict'
+        ],
 
+        'system' => [ // 系统配置
+            'white_list' => [],
+        ]
+    ];
 
     /**
      * 基础路径

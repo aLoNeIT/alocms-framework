@@ -39,14 +39,6 @@ class Session extends Base
         $this->handler = app('session');
     }
 
-    /** @inheritDoc */
-    public static function instance(bool $newInstance = false, array $args = []): static
-    {
-        /** @var Session $session */
-        $session = app('SessionLogic', $args, $newInstance);
-        return $session;
-    }
-
     /**
      * 获取用户id
      *
@@ -156,7 +148,7 @@ class Session extends Base
     /**
      * 获取当前会话存储的权限编码集合
      *
-     * @return JsonTable,
+     * @return JsonTable 返回JsonTable对象，data节点是权限编码集合
      */
     public function getFunction(): JsonTable
     {

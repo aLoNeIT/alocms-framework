@@ -8,7 +8,7 @@ use think\helper\Str;
 use think\Model;
 
 /**
- * Model数据基类
+ * Model模型基类
  */
 class Base extends Model
 {

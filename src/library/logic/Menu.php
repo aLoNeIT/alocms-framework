@@ -98,7 +98,7 @@ class Menu extends Base
     public function getMenu(int $appType = 1, bool $tree = true, string $parnetMenu = null): JsonTable
     {
         try {
-            $data = MenuModel::instance()->getDataByParent($appType, $parnetMenu)->order('mn_sort asc')->select();
+            $data = MenuModel::instance()->getByParent($parnetMenu, $appType)->order('mn_sort asc')->select();
             $parneInfo = MenuModel::find($parnetMenu);
             if ($tree) {
                 if (!($jResult = $this->packageMenu($data, $parneInfo))->isSuccess()) {

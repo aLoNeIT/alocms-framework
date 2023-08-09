@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace alocms\logic;
 
-use alocms\facade\ErrCode as ErrCodeFacade;
-use alocms\model\Dict as DictModel;
-use alocms\model\DictItem as DictItemModel;
-use alocms\util\CacheConst;
-use alocms\util\CmsException;
-use alocms\util\Helper;
-use alocms\util\JsonTable;
 use alocms\extend\dict\facade\Dict as DictFacade;
 use alocms\extend\dict\interface\Processor as DictProcessorInterface;
 use alocms\extend\dict\util\Dict as DictUtil;
 use alocms\extend\dict\util\DictItem as DictItemUtil;
+use alocms\facade\ErrCode as ErrCodeFacade;
+use alocms\model\Dict as DictModel;
+use alocms\model\DictItem as DictItemModel;
+use alocms\model\Menu as MenuModel;
+use alocms\util\CacheConst;
+use alocms\util\CmsException;
+use alocms\util\Helper;
+use alocms\util\JsonTable;
 use think\db\exception\PDOException;
 use think\Model;
 
@@ -138,6 +139,31 @@ class Dict extends Base implements DictProcessorInterface
         $dict = $this->getDict($dictId, $appType);
         $this->itemName[$key] = $dict;
         return $dict;
+    }
+    /**
+     * 根据uri获取字典
+     *
+     * @param string $uri uri地址
+     * @param integer $appType 应用类型
+     * @return DictUtil 返回字典对象
+     */
+    public function getDictByUri(string $uri, int $appType = 3): DictUtil
+    {
+        // 根据uri查询对应的页面
+        $menu = MenuModel::instance()->getByUri($uri, $appType)->find();
+        if (\is_null($menu)) {
+            throw new CmsException(
+                ErrCodeFacade::getJError(
+                    25,
+                    [
+                        'name' => '菜单数据'
+                    ]
+                )
+            );
+        }
+        // 获取页面的字典id
+        $id = $menu->page->p_dict;
+        return $this->getDict($id, $appType);
     }
 
     /**

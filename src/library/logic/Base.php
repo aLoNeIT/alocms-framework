@@ -10,7 +10,8 @@ use alocms\util\Helper;
 use alocms\util\JsonTable;
 
 /**
- * Logic模块下基类
+ * logic模块下基类，应用层可通过注册容器的方式来修改框架基类行为
+ * 注册容器名规则为alocms\logic\类名，如alocms\logic\SessionLogic
  */
 class Base
 {

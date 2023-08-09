@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace alocms\service;
 
 use alocms\AloCms;
+use alocms\logic\Privilege as PrivilegeLogic;
 use alocms\logic\Session as SessionLogic;
+use think\Config;
+use think\Route;
 use think\Service;
 
 /**
@@ -14,17 +17,24 @@ use think\Service;
 class Initialize extends Service
 {
     /**
+     * 容器绑定配置
+     *
+     * @var array
+     */
+    public $bind = [
+        'alocms' => AloCms::class,
+    ];
+    /**
      * 服务注册
      *
      * @return void
      */
     public function register(): void
     {
-        // 绑定AloCms类
-        $this->app->bind('alocms', AloCms::class);
         // 注册一些系统内使用的逻辑类
         $providers = [
-            'SessionLogic' => SessionLogic::class
+            // 'SessionLogic' => SessionLogic::class,
+            // 'PrivilegeLogic' => PrivilegeLogic::class,
         ];
         foreach ($providers as $name => $class) {
             if ($this->app->has($name)) continue;
@@ -32,7 +42,11 @@ class Initialize extends Service
         }
     }
 
-    public function boot(): void
+    public function boot(Route $route, Config $config): void
     {
+        // 字典路由配置
+        $dictController = $config->get('alocms.route.dict_controller');
+        $route->get('dict/:id', "{$dictController}@read");
+        $route->get('dict/uri/:uri', "{$dictController}@uri_read");
     }
 }

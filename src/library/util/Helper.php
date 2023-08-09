@@ -485,4 +485,32 @@ class Helper
         }
         return $jsonTable;
     }
+    /**
+     * 检测IP是否白名单
+     *
+     * @param string $ip 客户端ip
+     * @param string|array $rules 白名单规则
+     * @return boolean 返回校验结果，true表示通过，false表示不通过
+     */
+    public static function checkIP(string $ip, $rules): bool
+    {
+        if (!is_array($rules)) {
+            $rules = [$rules];
+        }
+        foreach ($rules as $rule) {
+            // 将.*临时替换成别的符号(.和*都是正则中有特殊含义的符号
+            $rule_regexp = str_replace('.*', 'tmp', $rule);
+            // 向规则字符串中增加转移，避免字符串中有其他特殊字符印象正则匹配
+            // 非必要语句本例可以忽略
+            $rule_regexp = preg_quote($rule_regexp, '/');
+            // 将临时符号替换成正则表达式
+            $rule_regexp = str_replace('tmp', '\.\d{1,3}', $rule_regexp);
+            // 返回匹配结果
+            $result = 1 == \preg_match('/^' . $rule_regexp . '$/', $ip);
+            if (false === $result) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

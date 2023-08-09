@@ -77,7 +77,7 @@ create table `{$database_prefix}_dict_item` (
     `di_group` VARCHAR (50) not null default '' comment '分组',
     `di_select` VARCHAR (255) not null default '' comment '下拉选择或其他附加信息，用;分割',
     `di_filtered` TINYINT not null default 0 comment '是否是筛选条件，用于前端是否显示搜索框，1：是；0：否',
-    `di_app_type` TINYINT not null default 0 comment '字典适用的应用类型，0-通用;1=管理后台；',
+    `di_app_type` TINYINT not null default 0 comment '字典适用的应用类型，0-通用；1-管理；2-集团；3-机构',
     `di_remark` VARCHAR (255) not null default '' comment '备注',
     primary key (`di_id`),
     key `idx_di_dict` (`di_dict`) using BTREE,
@@ -108,6 +108,7 @@ create table `{$database_prefix}_menu` (
     key `idx_mn_code` (`mn_code`) using BTREE,
     key `idx_mn_parent_code` (`mn_parent_code`) using BTREE,
     key `idx_mn_path` (`mn_path`) using BTREE,
+    key `idx_mn_uri` (`mn_uri`) using BTREE,
     key `un_idx_menu_info` (`mn_app_type`, `mn_state`, `mn_code`) using BTREE,
     key `idx_mn_state` (`mn_state`) using BTREE
 ) comment '菜单';
@@ -118,7 +119,7 @@ create table `{$database_prefix}_menu` (
 drop table if exists `{$database_prefix}_page`;
 create table `{$database_prefix}_page` (
     `p_id` INT not null auto_increment comment '主键',
-    `p_app_type` TINYINT not null default 3 comment '应用类型，1=管理员',
+    `p_app_type` TINYINT not null default 3 comment '应用类型，1-管理；2-集团；3-机构',
     `p_name` VARCHAR (50) not null default '' comment '页面名称',
     `p_type` TINYINT not null default 1 comment '页面类型，1-列表；2-新建；3-编辑；9-自定义',
     `p_dict` int not null default 0 comment '关联字典表id',
@@ -412,7 +413,7 @@ create table `{$database_prefix}_task_record` (
 drop table if exists `{$database_prefix}_mq_common_task`;
 create table `{$database_prefix}_mq_common_task` (
     `mct_id` int unsigned not null auto_increment comment '自增id',
-    `mct_app_type` int not null default 0 comment '应用类型，1系统、2医院、3服务商',
+    `mct_app_type` int not null default 0 comment '应用类型，1-管理；2-集团；3-机构',
     `mct_corporation` int not null default 0 comment '关联集团表id',
     `mct_organization` int not null default 0 comment '关联机构表id',
     `mct_type` int not null default 0 comment '任务类型，通过该字段区分不同任务',

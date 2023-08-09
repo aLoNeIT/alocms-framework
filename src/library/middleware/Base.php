@@ -18,7 +18,7 @@ class Base
     /**
      * 请求对象
      *
-     * @var think\Request
+     * @var Request
      */
     protected $request = null;
     /**
@@ -27,6 +27,12 @@ class Base
      * @var JsonTable
      */
     protected $jsonTable = null;
+    /**
+     * App实例
+     *
+     * @var \think\App
+     */
+    protected $app = null;
     /**
      * 构造函数
      */
@@ -41,7 +47,8 @@ class Base
      */
     protected function initialize(): void
     {
-        $this->jsonTable = app('JsonTable', [], true);
+        $this->jsonTable = \app('JsonTable', [], true);
+        $this->app = \app();
     }
     /**
      * 中间件处理方法

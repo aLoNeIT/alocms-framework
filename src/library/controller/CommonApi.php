@@ -7,7 +7,6 @@ namespace alocms\controller;
 use alocms\extend\dict\util\Dict as DictUtil;
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\logic\Dict as DictLogic;
-use alocms\logic\Session as SessionLogic;
 use alocms\model\Base as BaseModel;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
@@ -83,7 +82,6 @@ class CommonApi extends Api
     protected function initialize(): void
     {
         parent::initialize();
-        $this->sessionLogic = $this->app->get('SessionLogic');
     }
 
     /**

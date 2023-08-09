@@ -22,10 +22,14 @@ class DynamicApi extends Base
     public function initialize(): void
     {
         parent::initialize();
-        $this->sessionLogic = $this->app->get('SessionLogic');
+        $this->sessionLogic = SessionLogic::instance();
     }
 
     public function index()
+    {
+    }
+
+    public function read(int $id)
     {
     }
 
@@ -33,11 +37,19 @@ class DynamicApi extends Base
     {
     }
 
-    public function update()
+    public function update(int $id)
     {
     }
 
-    public function delete()
+    public function delete(int $id)
+    {
+    }
+    /**
+     * 获取当前动态接口对应的字典数据
+     *
+     * @return void
+     */
+    public function dict()
     {
     }
 }

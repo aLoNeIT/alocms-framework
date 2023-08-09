@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace alocms\service;
 
-use think\facade\Route;
+use think\Config;
+use think\Route;
 use think\Service;
 
 /**
@@ -19,18 +20,24 @@ class DynamicApi extends Service
      */
     public function register(): void
     {
+    }
+    /**
+     * 服务启动，支持注入
+     *
+     * @param Route $route 路由对象
+     * @param Config $config 配置对象
+     * @return void
+     */
+    public function boot(Route $route, Config $config): void
+    {
         // 读取配置的动态路由处理接口
-        $dynamicController = $this->app->config->get('alocms.dynamic_controller');
+        $dynamicController = $config->get('alocms.route.dynamic_controller');
         if (!\is_null($dynamicController)) {
             // 注册路由
-            Route::miss("{$dynamicController}/index", 'get');
-            Route::miss("{$dynamicController}/save", 'post');
-            Route::miss("{$dynamicController}/update", 'put');
-            Route::miss("{$dynamicController}/delete", 'delete');
+            $route->miss("{$dynamicController}@index", 'get');
+            $route->miss("{$dynamicController}@save", 'post');
+            $route->miss("{$dynamicController}@update", 'put');
+            $route->miss("{$dynamicController}@delete", 'delete');
         }
-    }
-
-    public function boot(): void
-    {
     }
 }

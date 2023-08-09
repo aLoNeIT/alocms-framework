@@ -95,4 +95,19 @@ class Request extends \think\Request
 
         return $this->realIP;
     }
+
+    /**
+     * 检查接口请求白名单
+     *
+     * @return boolean 返回价差结果
+     */
+    public function checkWhiteList(string $type): bool
+    {
+        $whiteList = \config('alocms.system.white_list', []);
+        $module = $this->app->http->getName();
+        $controller = $this->controller();
+        $action = $this->action();
+        $uri = "{$module}/{$controller}/{$action}";
+        return \in_array($uri, $whiteList[$type]);
+    }
 }
