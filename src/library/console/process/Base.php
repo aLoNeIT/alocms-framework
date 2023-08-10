@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace alocms\console\process;
 
 use alocms\console\common\Base as CommonBase;
+use alocms\extend\think\cache\driver\RedisCluster;
 use alocms\util\{JsonTable, Helper};
-use think\cache\driver\RedisCluster;
 use think\console\Input;
 use think\console\Output;
 use think\facade\Cache;

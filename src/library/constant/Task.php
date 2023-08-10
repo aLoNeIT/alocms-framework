@@ -25,7 +25,8 @@ class Task
      * 执行失败
      */
     const FAILED = 4;
-
-    // 任务类型
+    /**
+     * 任务类型，测试
+     */
     const TYPE_TEST = 1;
 }

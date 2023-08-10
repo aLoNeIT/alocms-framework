@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\controller;
 
+use alocms\Request;
 use think\App;
 use think\exception\ValidateException;
 use think\Validate;

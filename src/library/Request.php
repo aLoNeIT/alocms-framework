@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms;
 
+use alocms\constant\Common as CommonConstant;
 use alocms\util\Helper;
 
 // 应用请求对象类
@@ -41,10 +42,8 @@ class Request extends \think\Request
      */
     public function appType(): int
     {
-        $appTypeMap = \config('system.app_type', [
-            'admin' => 1,
-        ]);
-        $appType = $appTypeMap[$this->app->http->getName()] ?? 1;
+        $appTypeMap = \array_flip(CommonConstant::APP_TYPE_MAP);
+        $appType = $appTypeMap[$this->app->http->getName()] ?? 3;
         return (int)$appType;
     }
     /**

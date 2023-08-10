@@ -19,12 +19,14 @@ final class AloCms
      */
     private $config = [
         'route' => [ // 路由配置
-            'dynamic_controller' => '\\alocms\\controller\\DynamicApi', // 动态控制器配置，null表示禁用，非null表示指定控制器名
-            'dict_controller' => '\\alocms\\controller\\Dict'
+            'dynamic_controller' => '\\alocms\\controller\\DynamicApi', // 动态控制器配置，全局miss 路由至该控制器进行处理
+            'dict_controller' => '\\alocms\\controller\\Dict' // 字典控制器配置，domain/dict 会路由至该控制器进行处理
         ],
-
         'system' => [ // 系统配置
-            'white_list' => [],
+            'white_list' => [ // 接口请求白名单
+                'session' => [], // 无需校验session的接口
+                'privilege' => [] // 无需校验权限的接口
+            ],
         ]
     ];
 
