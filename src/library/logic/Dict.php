@@ -9,6 +9,7 @@ use alocms\extend\dict\interface\Processor as DictProcessorInterface;
 use alocms\extend\dict\util\Dict as DictUtil;
 use alocms\extend\dict\util\DictItem as DictItemUtil;
 use alocms\facade\ErrCode as ErrCodeFacade;
+use alocms\logic\Session as SessionLogic;
 use alocms\model\Dict as DictModel;
 use alocms\model\DictItem as DictItemModel;
 use alocms\model\Menu as MenuModel;
@@ -140,31 +141,6 @@ class Dict extends Base implements DictProcessorInterface
         $this->itemName[$key] = $dict;
         return $dict;
     }
-    /**
-     * 根据uri获取字典
-     *
-     * @param string $uri uri地址
-     * @param integer $appType 应用类型
-     * @return DictUtil 返回字典对象
-     */
-    public function getDictByUri(string $uri, int $appType = 3): DictUtil
-    {
-        // 根据uri查询对应的页面
-        $menu = MenuModel::instance()->getByUri($uri, $appType)->find();
-        if (\is_null($menu)) {
-            throw new CmsException(
-                ErrCodeFacade::getJError(
-                    25,
-                    [
-                        'name' => '菜单数据'
-                    ]
-                )
-            );
-        }
-        // 获取页面的字典id
-        $id = $menu->page->p_dict;
-        return $this->getDict($id, $appType);
-    }
 
     /**
      * 通过模型获取表名称
@@ -234,7 +210,7 @@ class Dict extends Base implements DictProcessorInterface
      * @return JsonTable 返回JsonTable对象，msg节点是分页数据，data节点是查询结果
      */
     public function select(
-        int|DictUtil $dict,
+        $dict,
         array $condition = [],
         ?array $order = null,
         string $fuzzy = null,
@@ -243,7 +219,7 @@ class Dict extends Base implements DictProcessorInterface
         int $appType = 0
     ): JsonTable {
         try {
-            if (!($dict instanceof DictUtil)) {
+            if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
             $query = DictFacade::build($dict, 1, $condition, $order, $fuzzy, $appType);
@@ -282,13 +258,10 @@ class Dict extends Base implements DictProcessorInterface
      * @param integer $appType 应用类型
      * @return JsonTable 返回JsonTable对象，data节点是查询到的数据
      */
-    public function findByPrimaryKey(int|DictUtil $dict, string|int $id, ?array $order = null, int $appType = 0): JsonTable
+    public function findByPrimaryKey($dict, string|int $id, ?array $order = null, int $appType = 0): JsonTable
     {
-        if (!($dict instanceof DictUtil)) {
-            $dict = $this->getDict($dict);
-        }
         try {
-            if (!($dict instanceof DictUtil)) {
+            if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
             $query = DictFacade::findByPrimaryKey($dict, $id, $order, $appType);
@@ -314,7 +287,7 @@ class Dict extends Base implements DictProcessorInterface
     public function find($dict, array $condition = [], ?array $order = null, int $appType = 0): JsonTable
     {
         try {
-            if (!($dict instanceof DictUtil)) {
+            if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
             $query = DictFacade::find($dict, 8, $condition, $order, null, $appType);
@@ -337,10 +310,10 @@ class Dict extends Base implements DictProcessorInterface
      * @param integer $appType 应用类型
      * @return JsonTable 返回JsonTable对象，data节点是更新后的数据
      */
-    public function update(int|DictUtil $dict, array $data, array $condition = [], int $appType = 0): JsonTable
+    public function update($dict, array $data, array $condition = [], int $appType = 0): JsonTable
     {
         try {
-            if (!($dict instanceof DictUtil)) {
+            if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
             // 添加数据前缀
@@ -378,7 +351,7 @@ class Dict extends Base implements DictProcessorInterface
     public function save($dict, array $data = [], int $appType = 0): JsonTable
     {
         try {
-            if (!($dict instanceof DictUtil)) {
+            if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
             // 添加数据前缀
@@ -412,7 +385,7 @@ class Dict extends Base implements DictProcessorInterface
     public function delete($dict, array $condition = [], int $appType = 0): JsonTable
     {
         try {
-            if (!($dict instanceof DictUtil)) {
+            if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
             $query = DictFacade::build($dict, 16, $condition, null, null, $appType);

@@ -27,6 +27,29 @@ class Base extends BaseController
         $this->jsonTable = $this->app->make('JsonTable', [], true);
     }
     /**
+     * 根据JsonTable结构数据抛出异常
+     *
+     * @param string $msg 消息体
+     * @param integer $state 错误码
+     * @param array $data 扩展消息
+     * @return void
+     * @throws \think\exception\HttpResponseException
+     */
+    protected function jexception($msg = 'error', int $state = 1, $data = []): void
+    {
+        if ($this->request->isJson()) {
+            $response = \json(
+                $this->jsonTable->message($msg, $state, $data)->toArray()
+            );
+        } else {
+            $response = \response(
+                $this->jsonTable->message($msg, $state, $data)->toJson()
+            );
+        }
+        \abort($response);
+    }
+
+    /**
      * 获取json格式数据返回
      *
      * @param string $msg 消息体
@@ -34,7 +57,7 @@ class Base extends BaseController
      * @param array|object $data 扩展消息
      * @return string|array
      */
-    public function jecho($msg = 'success', int $state = 0, $data = [])
+    protected function jecho($msg = 'success', int $state = 0, $data = [])
     {
         return $this->request->isJson()
             ? $this->jsonTable->message($msg, $state, $data)->toArray()
@@ -46,9 +69,9 @@ class Base extends BaseController
      * @param string $msg 消息体
      * @param integer $state 错误码
      * @param array|object $data 扩展消息
-     * @return void
+     * @return string|array
      */
-    public function jerror($msg = 'failed', int $state = 1, $data = [])
+    protected function jerror($msg = 'failed', int $state = 1, $data = [])
     {
         return $this->jecho($msg, $state, $data);
     }
@@ -57,9 +80,9 @@ class Base extends BaseController
      *
      * @param string $msg 消息体
      * @param array|object $data 扩展消息
-     * @return void
+     * @return string|array
      */
-    public function jsuccess($msg = 'success', $data = [])
+    protected function jsuccess($msg = 'success', $data = [])
     {
         return $this->jecho($msg, 0, $data);
     }

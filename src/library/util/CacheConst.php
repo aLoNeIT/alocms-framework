@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace alocms\util;
 
+use alocms\constant\Common as CommonConst;
+
 /**
  * 缓存常量
  */
@@ -118,7 +120,7 @@ final class CacheConst
      * @param integer $appType 应用类型
      * @return string 返回key
      */
-    public static function dict(int $id, int $appType = 0): string
+    public static function dict(int $id, int $appType = CommonConst::APP_TYPE_COMMON): string
     {
         return self::DICT . ":{$id}:{$appType}";
     }
@@ -129,7 +131,7 @@ final class CacheConst
      * @param integer $appType 应用类型
      * @return string 返回key
      */
-    public static function dictTableName(string $tableName, int $appType = 0): string
+    public static function dictTableName(string $tableName, int $appType = CommonConst::APP_TYPE_COMMON): string
     {
         return self::DICT_TABLENAME . ":{$tableName}:{$appType}";
     }
@@ -142,7 +144,7 @@ final class CacheConst
      * @param integer $appType 应用类型
      * @return string 返回key
      */
-    public static function dictDefine(int $id, int $appType = 1): string
+    public static function dictDefine(int $id, int $appType = CommonConst::APP_TYPE_ORGANIZATION): string
     {
         return self::DICT_DEFINE . ":{$id}:{$appType}";
     }
@@ -172,10 +174,11 @@ final class CacheConst
     /**
      * 登录次数
      *
-     * @param integer $id 字典id
+     * @param string $account 账号
+     * @param integer $appType 应用类型
      * @return string 返回会话登录次数名称
      */
-    public static function accountLoginTimes(string $account, int $appType = 1): string
+    public static function accountLoginTimes(string $account, int $appType = CommonConst::APP_TYPE_ORGANIZATION): string
     {
         return self::ACCOUNT_LOGIN . ":times:{$account}:{$appType}";
     }

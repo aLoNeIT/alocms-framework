@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace alocms\logic;
 
-use alocms\constant\Task as TaskConstant;
+use alocms\constant\Task as TaskConst;
+use alocms\extend\mqworker\Driver as MQWorkerDriver;
+use alocms\extend\mqworker\facade\MQWorker as MQWorkerFacade;
 use alocms\model\MQCommonTask as MQCommonTaskModel;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
-use alocms\extend\mqworker\Driver as MQWorkerDriver;
-use alocms\extend\mqworker\facade\MQWorker as MQWorkerFacade;
 
 /**
  * MQ通用任务逻辑处理
@@ -77,7 +77,7 @@ class MQCommonTask extends Base
                 'admin' => $admin,
                 'action' => $action,
                 'params' => $params,
-                'state' => TaskConstant::WAITING,
+                'state' => TaskConst::WAITING,
                 'src_table' => $srcTable,
                 'src_field' => $srcField,
                 'src_id' => $srcId,
@@ -114,7 +114,7 @@ class MQCommonTask extends Base
             ] = $data;
             //更新任务表状态
             MQCommonTaskModel::update([
-                'mct_state' => TaskConstant::PROCESSING,
+                'mct_state' => TaskConst::PROCESSING,
                 'mct_process_time' => time(),
             ], [
                 'mct_id' => $id,
@@ -134,7 +134,7 @@ class MQCommonTask extends Base
         // 最后更新
         try {
             MQCommonTaskModel::update([
-                'mct_state' => $jResult->isSuccess() ? TaskConstant::SUCCEED : TaskConstant::FAILED,
+                'mct_state' => $jResult->isSuccess() ? TaskConst::SUCCEED : TaskConst::FAILED,
                 'mct_finish_time' => time(),
                 'mct_result' => $jResult->data ?? [],
             ], [

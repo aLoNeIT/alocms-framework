@@ -8,6 +8,7 @@ use alocms\AloCms;
 use alocms\logic\Privilege as PrivilegeLogic;
 use alocms\logic\Session as SessionLogic;
 use think\Config;
+use think\Lang;
 use think\Route;
 use think\Service;
 
@@ -42,11 +43,15 @@ class Initialize extends Service
         }
     }
 
-    public function boot(Route $route, Config $config): void
+    public function boot(Route $route, Config $config, Lang $lang): void
     {
         // 字典路由配置
         $dictController = $config->get('alocms.route.dict_controller');
         $route->get('dict/:id', "{$dictController}@read");
         $route->get('dict/uri/:uri', "{$dictController}@uri_read");
+        /** @var AloCms $alocms */
+        $alocms = $this->app->alocms;
+        // 加载语言文件
+        $lang->load($alocms->getRootPath('library/lang') . 'zh-cn.php');
     }
 }

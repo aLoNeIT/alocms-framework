@@ -63,11 +63,13 @@ class ErrCode
         '41' => 'dict_item_not_exist',
         '42' => 'dict_id_not_exist',
         '43' => 'dict_range_error',
-
         // 会话相关
         '80' => 'session_not_exist',
         '81' => 'access_not_allowed',
         '82' => 'login_info_not_correct',
+        // 字典相关
+        '100' => 'dict_property_not_exists',
+        '101' => 'dictitem_fields_empty',
 
     ];
     /**

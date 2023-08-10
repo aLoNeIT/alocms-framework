@@ -137,8 +137,8 @@ drop table if exists `{$database_prefix}_page_item`;
 create table `{$database_prefix}_page_item` (
     `pi_id` INT not null auto_increment comment '主键',
     `pi_page` int not null default 0 comment '关联页面表主键',
-    `pi_dict_item` int not null default 0 comment '关联字典项表id',
     `pi_dict` int not null default 0 comment '关联字典表id',
+    `pi_dict_item_fieldname` varchar(50) not null default '' comment '关联字典项表di_fieldname字段',
     `pi_role_whitelist` json comment '角色白名单，json数组格式，每个元素是角色id',
     `pi_role_blacklist` json comment '角色黑名单，json数组格式，每个元素是角色id',
     primary key (`pi_id`),

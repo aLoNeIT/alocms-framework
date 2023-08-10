@@ -18,6 +18,9 @@ final class AloCms
      * 配置信息，仅做展示用，业务层需要自行配置
      */
     private $config = [
+        'install' => [ // 安装配置
+            'disable_json' => false, // 是否需禁用json字段，false代表支持，true代表不支持，默认替换json为varchar(max)，如果是string类型则替换成填写的配置
+        ],
         'route' => [ // 路由配置
             'dynamic_controller' => '\\alocms\\controller\\DynamicApi', // 动态控制器配置，全局miss 路由至该控制器进行处理
             'dict_controller' => '\\alocms\\controller\\Dict' // 字典控制器配置，domain/dict 会路由至该控制器进行处理
@@ -57,8 +60,6 @@ final class AloCms
      */
     protected function initialize(): void
     {
-        // 加载语言文件
-        $this->app->lang->load($this->getRootPath('library/lang') . 'zh-cn.php');
     }
 
     /**

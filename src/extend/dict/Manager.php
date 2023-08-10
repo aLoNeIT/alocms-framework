@@ -16,7 +16,7 @@ use think\helper\Str;
 /**
  * 字典管理类
  */
-class Dict
+class Manager
 {
     use Instance;
     /**

@@ -8,6 +8,9 @@ use think\db\Query;
 use think\model\relation\HasMany;
 use think\model\relation\HasOne;
 
+/**
+ * 菜单模型
+ */
 class Menu extends Base
 {
     /** @inheritDoc */

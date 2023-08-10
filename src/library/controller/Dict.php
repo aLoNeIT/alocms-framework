@@ -43,14 +43,13 @@ class Dict extends Base
     {
         $appType = $this->request->get('app_type/d', $this->request->appType());
         $uri = \base64_decode($uri);
-        $jResult = DictDefineLogic::instance()->getItemListByUri($uri, $appType);
-        if ($jResult->isSuccess()) {
-            // 成功处理，则获取数据
-            $data = $jResult->data;
-            // 删除敏感数据
-            unset($data['prefix']);
-            $jResult = $this->jsonTable->successByData($data);
+        if (!($jResult = DictDefineLogic::instance()->getItemListByUri($uri, $appType))->isSuccess()) {
+            return $this->jecho($jResult);
         }
-        return $this->jecho($jResult);
+        // 成功处理，则获取数据
+        $data = $jResult->data;
+        // 删除敏感数据
+        unset($data['prefix']);
+        return $this->jsuccess('success', $data);
     }
 }

@@ -143,10 +143,13 @@ abstract class Base extends CommonBase
     protected function reset(): void
     {
         if (\time() - $this->lastTime > 300) {
-            //强制重新创建新的数据库连接
-            $this->app->delete('db');
-            //清理掉Cache缓存
-            $this->app->delete('cache');
+            $app = \app();
+            // 删除容器中db实例
+            $app->delete('db');
+            $app->delete('think\DbManager');
+            // 删除容器中db实例
+            $app->delete('cache');
+            $app->delete('think\CacheManager');
             $this->lastTime = time();
         }
     }

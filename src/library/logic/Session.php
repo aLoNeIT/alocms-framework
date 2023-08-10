@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\logic;
 
+use alocms\constant\Common as CommonConst;
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\logic\Privilege as PrivilegeLogic;
 use alocms\model\Hospital as HospitalModel;
@@ -83,8 +84,8 @@ class Session extends Base
                 if (!$userid || !$appType) {
                     return ErrCodeFacade::getJError(80);
                 }
-                $role      = RelationModel::instance()->getRoleByUser($appType, $userid)->fieldRaw(
-                    " max(rel_role_level) as max_level , min(rel_role_level) as min_level  "
+                $role = RelationModel::instance()->getRoleByUser($userid, $appType)->fieldRaw(
+                    " max(rel_role_level) as max_level , min(rel_role_level) as min_level "
                 )->find();
                 $maxLevel  = $role->max_level ?? null;
                 $minLevel  = $role->min_level ?? null;
@@ -118,7 +119,7 @@ class Session extends Base
                 if (!$userid || !$appType) {
                     return ErrCodeFacade::getJError(80);
                 }
-                $relation = RelationModel::instance()->getRoleByUser($appType, $userid)
+                $relation = RelationModel::instance()->getRoleByUser($userid, $appType)
                     ->order('rel_role_level desc')
                     ->select();
 
@@ -137,7 +138,6 @@ class Session extends Base
                         'name' => $rName
                     ];
                 }
-
                 $this->handler->set('user_role', $roleMess);
             }
             return $this->jsonTable->successByData($this->handler->get('user_role'));
@@ -226,19 +226,19 @@ class Session extends Base
      */
     public function logout(): JsonTable
     {
-        $this->sessionRecord($this->getAppType(), $this->handler->getId());
+        $this->sessionRecord($this->handler->getId(), [], $this->getAppType());
         return $this->jsonTable->success();
     }
 
     /**
      * 会话记录
      *
-     * @param integer $appType 应用类型
      * @param string $sessionId 会话id
      * @param array $data 用户数据
+     * @param integer $appType 应用类型
      * @return void
      */
-    protected function sessionRecord(int $appType, string $sessionId, array $data = []): void
+    protected function sessionRecord(string $sessionId, array $data = [], int $appType = CommonConst::APP_TYPE_ORGANIZATION): void
     {
         try {
             // 查询session信息
@@ -321,7 +321,7 @@ class Session extends Base
         // 设置当前会话数据
         $this->handler->setData($data);
         // 会话数据持久化
-        $this->sessionRecord($appType, $token, $data);
+        $this->sessionRecord($token, $data, $appType);
         return $this->jsonTable->successByData(
             [
                 'token' => $token,

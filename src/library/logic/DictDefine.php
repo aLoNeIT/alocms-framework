@@ -2,8 +2,11 @@
 
 namespace alocms\logic;
 
+use alocms\constant\Common as CommonConst;
+use alocms\extend\dict\util\Dict as DictUtil;
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\logic\Dict as DictLogic;
+use alocms\logic\Dynamic as DynamicLogic;
 use alocms\model\Menu as MenuModel;
 use alocms\util\CacheConst;
 use alocms\util\Helper;
@@ -29,20 +32,15 @@ class DictDefine extends Base
      *
      * @return array
      */
-    protected function getDict(int $dictId, int $appType = 0): array
+    protected function getDict(int $dictId, int $appType = CommonConst::APP_TYPE_COMMON): array
     {
         $dictData = [];
         // 内存中不存在字典数据
         $key = CacheConst::dictDefine($dictId, $appType);
         // 判断内存中是否有数据
         if (!isset($this->items[$key])) {
-            if (!cache("?{$key}")) {
-                // 缓存中也不存在，则从数据库中读取
-                $dictData = DictLogic::instance()->getDict($dictId, $appType)->toArray(false);
-                cache($key, $dictData, CacheConst::ONE_DAY);
-            } else {
-                $dictData = cache($key);
-            }
+            // 当前内存不存在，则通过字典逻辑类获取最新的
+            $dictData = DictLogic::instance()->getDict($dictId, $appType)->toArray(false);
             $this->items[$key] = $dictData;
         } else {
             $dictData = $this->items[$key];
@@ -54,10 +52,10 @@ class DictDefine extends Base
      * 清理字典缓存
      *
      * @param integer $dictId 字典id
-     *
+     * @param integer $appType 应用类型
      * @return JsonTable
      */
-    public function clearDict(int $dictId, int $appType = 0): JsonTable
+    public function clearDict(int $dictId, int $appType = CommonConst::APP_TYPE_COMMON): JsonTable
     {
         try {
             // 内存中不存在字典数据
@@ -80,7 +78,7 @@ class DictDefine extends Base
      *
      * @return JsonTable 字典项数据写在data节点
      */
-    public function getItemList(int $dictId, int $appType = 3): JsonTable
+    public function getItemList(int $dictId, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
         try {
             $dictData = $this->getDict($dictId, $appType);
@@ -95,23 +93,18 @@ class DictDefine extends Base
      * @param string $uri uri地址
      * @param integer $appType 应用类型
      * @return JsonTable 返回JsonTable对象，data节点是字典项数据集合
+     * @todo 后期考虑做缓存
      */
-    public function getItemListByUri(string $uri, int $appType = 3): JsonTable
+    public function getItemListByUri(string $uri, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
         try {
-            // 根据uri查询对应的页面
-            $menu = MenuModel::instance()->getByUri($uri, $appType)->find();
-            if (\is_null($menu)) {
-                return ErrCodeFacade::getJError(
-                    25,
-                    [
-                        'name' => '菜单数据'
-                    ]
-                );
+            // 获取字典数据
+            if (!($jResult = DynamicLogic::instance()->getDictByUri($uri, $appType))->isSuccess()) {
+                return $jResult;
             }
-            // 获取页面的字典id
-            $id = $menu->page->p_dict;
-            return $this->getItemList($id, $appType);
+            /** @var DictUtil $dict */
+            $dict = $jResult->data;
+            return $this->jsonTable->successByData($dict->toArray(false));
         } catch (\Throwable $ex) {
             return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
         }

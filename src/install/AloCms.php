@@ -12,6 +12,7 @@ use think\console\Input;
 use think\console\input\Argument;
 use think\console\input\Option;
 use think\console\Output;
+use think\facade\Config;
 use think\facade\Db;
 use think\response\Json;
 
@@ -91,6 +92,8 @@ class AloCms extends Command
             if (\file_exists($lockFile)) {
                 return $this->jsonTable->error('系统已初始化');
             }
+            // 获取是否支持json字段的配置
+            $disableJson = Config::get('alocms.install.disable_json', false);
             // 获取sql所在目录
             $sqlPath = $this->alocms->getRootPath('install/sql');
             // 获取所有sql文件
@@ -111,6 +114,12 @@ class AloCms extends Command
                     foreach ($sqls as $sql) {
                         $sql = trim($sql);
                         if (empty($sql)) continue;
+                        // 判断是否支持json字段
+                        if (false !== $disableJson) {
+                            $sql = \is_string($disableJson)
+                                ? \str_replace(' json ', " {$disableJson} ", $sql)
+                                : \str_replace(' json ', " varchar(max) ", $sql);
+                        }
                         Db::execute("{$sql}");
                     }
                 }

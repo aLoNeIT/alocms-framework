@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\model;
 
+use alocms\constant\Common as CommonConst;
 use think\db\Query;
 use think\model\relation\BelongsTo;
 
@@ -32,11 +33,11 @@ class Relation extends Base
     /**
      * 获取指定角色的所有用户
      *
+     * @param integer|array $role 角色id
      * @param integer $appType 应用类型
-     * @param  integer|array $role 角色id
      * @return Query
      */
-    public function getUserByRole(int $appType, $role): Query
+    public function getUserByRole($role, int $appType = CommonConst::APP_TYPE_ORGANIZATION): Query
     {
         $query = $this->baseAppTypeQuery($appType);
         if (\is_array($role)) {
@@ -50,11 +51,11 @@ class Relation extends Base
     /**
      * 获取指定用户的所有角色
      *
-     * @param integer $appType 应用类型
      * @param integer $user 用户id
+     * @param integer $appType 应用类型
      * @return Query
      */
-    public function getRoleByUser(int $appType, int $user): Query
+    public function getRoleByUser(int $user, int $appType = CommonConst::APP_TYPE_ORGANIZATION): Query
     {
         return $this->baseAppTypeQuery($appType)
             ->alias('rel')

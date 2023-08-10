@@ -66,6 +66,9 @@ use alocms\extend\dict\util\Dict;
  */
 class DictItem
 {
+    /**
+     * 字典项每个字段的默认值
+     */
     const DICTITEM_DEFAULT = [
         'id' => 0,
         'dict' => 0,

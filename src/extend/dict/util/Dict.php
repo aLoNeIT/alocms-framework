@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace alocms\extend\dict\util;
 
-use alocms\util\Helper;
 use alocms\extend\dict\util\DictItem;
+use alocms\facade\ErrCode as ErrCodeFacade;
+use alocms\util\Helper;
 
 /**
  * 字典类，对应一个数据库表
@@ -61,6 +62,31 @@ class Dict
     {
         $this->clear();
     }
+    /**
+     * 获取新的字典对象
+     *
+     * @param array|null $fieldNames 指定的字典项fieldname数组
+     * @return static 返回新的字典对象
+     */
+    public function newInstance(?array $fieldNames = null): static
+    {
+        // 如果不要求指定字段，则直接返回当前对象的克隆
+        if (\is_null($fieldNames)) {
+            return clone $this;
+        }
+        // 创建新的字典对象
+        $dictData = $this->data;
+        $dictItemData = [];
+        // 获取指定对象的字段值
+        foreach ($fieldNames as $fieldName) {
+            $dictItem = $this->getItem($fieldName);
+            if (!\is_null($dictItem)) {
+                // 查询到有效子项，则将其添加到新的字典对象中
+                $dictItemData[] = $dictItem->getData();
+            }
+        }
+        return new static($dictData, $dictItemData);
+    }
 
     /**
      * 载入新的字典数据
@@ -74,7 +100,11 @@ class Dict
         // 参数校验
         foreach (self::DICT_PROPERTIES as $property) {
             if (!isset($data[$property])) {
-                Helper::exception(\lang('dict_property_not_exists', ['property' => $property]));
+                Helper::exception(
+                    ErrCodeFacade::getJError(100, [
+                        'property' => $property
+                    ])
+                );
             }
             $this->data[$property] = $data[$property];
         }
@@ -99,15 +129,34 @@ class Dict
      * 添加一个字典项
      *
      * @param array|DictItem $data 字典项数据
-     * @return static 返回当前对象
+     * @return DictItem 返回字典项对象
      */
-    public function addItem($data): static
+    public function addItem($data): DictItem
     {
+        /** @var DictItem $item */
+        $item = null;
         if ($data instanceof DictItem) {
-            $this->items[$data->fieldname] = $data;
+            $item = $data;
         } else {
             $item = new DictItem($this, $data);
-            $this->items[$item->fieldname] = $item;
+        }
+        $this->items[$item->fieldname] = $item;
+        return $item;
+    }
+
+    /**
+     * 删除子项
+     *
+     * @param DictItem|string $fieldName 字典项名称或者字典项对象
+     * @return static 返回当前对象
+     */
+    public function removeItem($fieldName): static
+    {
+        if ($fieldName instanceof DictItem) {
+            $fieldName = $fieldName->fieldname;
+        }
+        if ($this->exists($fieldName)) {
+            unset($this->items[$fieldName]);
         }
         return $this;
     }
@@ -152,7 +201,9 @@ class Dict
     public function setItemsValue(array $value, ?array $fieldNames = null): static
     {
         if (empty($fieldNames)) {
-            Helper::exception(\lang('dictitem_fields_empty'));
+            Helper::exception(
+                ErrCodeFacade::getJError(101)
+            );
         }
         $this->eachItem(function (string $key, DictItem $item) use ($value) {
             $item->setData($value);
@@ -213,7 +264,11 @@ class Dict
         if (isset($this->data[strtolower($name)])) {
             return $this->data[strtolower($name)];
         }
-        Helper::exception(\lang('dict_property_not_exists', ['property' => $name]));
+        Helper::exception(
+            ErrCodeFacade::getJError(100, [
+                'property' => $name
+            ])
+        );
     }
 
     /**
@@ -251,5 +306,20 @@ class Dict
         return array_merge($this->items, [
             'dict_item' => $dictItem,
         ]);
+    }
+    /**
+     * clone魔术方法
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $items = [];
+        // 创建字典项新对象
+        foreach ($this->items as $item) {
+            $items[$item->fieldname] = new DictItem($this, $item->getData());
+        }
+        $this->items = $items;
+        $this->primaryKey = null;
     }
 }

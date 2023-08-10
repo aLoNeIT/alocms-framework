@@ -7,6 +7,7 @@ namespace alocms\controller;
 use alocms\extend\dict\util\Dict as DictUtil;
 use alocms\logic\Dict as DictLogic;;
 
+use alocms\logic\Dynamic as DynamicLogic;
 use alocms\logic\Session as SessionLogic;
 use alocms\util\Helper;
 
@@ -57,11 +58,15 @@ class DynamicApi extends Base
      * 获取当前动态页面字典
      *
      * @return DictUtil
+     * @throws \think\exception\HttpResponseException
      */
     protected function getDict(): DictUtil
     {
         if (\is_null($this->dict)) {
-            $this->dict = DictLogic::instance()->getDictByUri($this->request->baseUrl());
+            if (!($jResult = DynamicLogic::instance()->getDictByUri($this->request->baseUrl()))->isSuccess()) {
+                $this->jexception($jResult);
+            }
+            $this->dict = $jResult->data;
         }
         return $this->dict;
     }
@@ -88,7 +93,7 @@ class DynamicApi extends Base
         $dict = $this->getDict();
         // 执行查询
         $jResult = DictLogic::instance()->select(
-            $this->dict,
+            $dict,
             $condition,
             $order,
             $fuzzy,
@@ -138,14 +143,6 @@ class DynamicApi extends Base
      * @return string|array|response
      */
     public function delete(int $id)
-    {
-    }
-    /**
-     * 获取当前动态接口对应的字典数据
-     *
-     * @return string|array|response
-     */
-    public function dict_index()
     {
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace alocms\extend\dict\interface;
 
 use alocms\extend\dict\util\Dict as DictUtil;
+use alocms\util\CmsException;
 use think\Model;
 
 /**
@@ -21,6 +22,7 @@ interface Processor
      * @param integer $appType 应用类型
      * @param boolean $newInstance 是否返回新的对象
      * @return DictUtil 返回字典对象
+     * @throws CmsException|\Exception
      */
     public function getDict(int $id, int $appType = 0, bool $newInstance = false): DictUtil;
     /**
@@ -29,6 +31,7 @@ interface Processor
      * @param DictUtil $dict 字典类
      * @param string $module 模块名
      * @return Model 返回模型对象
+     * @throws CmsException|\Exception
      */
     public function getModel(DictUtil $dict, string $module = 'common'): Model;
     /**
