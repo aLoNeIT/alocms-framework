@@ -17,13 +17,6 @@ class CronPublisher extends CronBase
     use RabbitMQTrait;
 
     /**
-     * 最后一次清理时间
-     *
-     * @var integer
-     */
-    protected $lastClearTime = 0;
-
-    /**
      * 任务是否执行的开关
      *
      * @var boolean
@@ -195,24 +188,5 @@ class CronPublisher extends CronBase
     public function getTask()
     {
         return $this->switch = !$this->switch;
-    }
-
-    /** @inheritDoc */
-    protected function loopInitialize(): void
-    {
-        // 3分钟执行一次循环
-        if ($this->lastClearTime < time() - 180) {
-            parent::loopInitialize();
-            $this->lastClearTime = time();
-        }
-    }
-    /** @inheritDoc */
-    protected function loopUninitialize(): void
-    {
-        // 3分钟执行一次循环
-        if ($this->lastClearTime < time() - 180) {
-            parent::loopUninitialize();
-            $this->lastClearTime = time();
-        }
     }
 }

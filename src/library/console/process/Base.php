@@ -10,6 +10,7 @@ use alocms\util\{JsonTable, Helper};
 use think\console\Input;
 use think\console\Output;
 use think\facade\Cache;
+use think\Model;
 
 /**
  * 后台任务处理基类
@@ -150,6 +151,9 @@ abstract class Base extends CommonBase
             // 删除容器中db实例
             $app->delete('cache');
             $app->delete('think\CacheManager');
+            // 重新配置相关信息
+            Model::setDb($app->db);
+            // todo 如果子进程有用到validate和view，或某些扩展的驱动也有长连接的，也需要注意重新设置
             $this->lastTime = time();
         }
     }

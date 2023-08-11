@@ -58,7 +58,7 @@ class Dict extends Base implements DictProcessorInterface
                 $dictModel = DictModel::find($id);
                 if (\is_null($dictModel)) {
                     // 未查询到有效数据
-                    throw new CmsException(
+                    Helper::exception(
                         ErrCodeFacade::getJError(
                             40,
                             [
@@ -73,7 +73,7 @@ class Dict extends Base implements DictProcessorInterface
                     ->order('di_show_order asc  ,di_id asc')->select();
                 if ($dictItemModel->isEmpty()) {
                     // 未查询到有效数据
-                    throw new CmsException(
+                    Helper::exception(
                         ErrCodeFacade::getJError(
                             41,
                             [
@@ -83,9 +83,10 @@ class Dict extends Base implements DictProcessorInterface
                         )
                     );
                 }
-                // 读取到的数据做处理
+                // 读取到的数据做去除前缀处理
                 $dictData = Helper::delPrefixArr($dictModel->toArray(), 'd_');
                 $dictItemData = Helper::delPrefixArr($dictItemModel->toArray(), 'di_');
+                // 生成字典对象
                 $dictUtil = new DictUtil($dictData, $dictItemData);
                 cache("{$key}", $dictUtil, CacheConst::ONE_DAY);
             } else {
@@ -130,7 +131,7 @@ class Dict extends Base implements DictProcessorInterface
         // 未查询到数据，则到数据库查询对应id
         $dictId = DictModel::where('d_tablename', $tableName)->value('d_id');
         if (\is_null($dictId)) {
-            throw new CmsException(
+            Helper::exception(
                 ErrCodeFacade::getJError(
                     42,
                     []
@@ -171,7 +172,7 @@ class Dict extends Base implements DictProcessorInterface
         $dictItem = $dict->getItem($fieldName);
         if (\is_null($dictItem)) {
             // 获取不到有效的字典项数据，抛出异常
-            throw new CmsException(
+            Helper::exception(
                 ErrCodeFacade::getJError(
                     41,
                     [
