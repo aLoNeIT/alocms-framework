@@ -15,22 +15,10 @@ use alocms\util\JsonTable;
 
 /**
  * 动态页面逻辑类
+ * @author alone <alone@alonetech.com>
  */
 class Dynamic extends Base
 {
-    /**
-     * 获取当前动态页面列表页字典
-     *
-     * @param string $uri uri地址
-     * @return DictUtil 返回字典工具类
-     */
-    public function getSelectDict(string $uri): DictUtil
-    {
-        $request = \request();
-        // 读取当前菜单对应的字典
-        $dict =  $this->getDictByUri($request->baseUrl());
-        return new DictUtil();
-    }
 
     /**
      * 根据uri获取字典

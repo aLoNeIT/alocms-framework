@@ -45,12 +45,18 @@ class Initialize extends Service
 
     public function boot(Route $route, Config $config, Lang $lang): void
     {
-        // 字典路由配置
-        $dictController = $config->get('alocms.route.dict_controller');
-        $route->get('dict/:id', "{$dictController}@read");
-        $route->get('dict/uri/:uri', "{$dictController}@uri_read");
         /** @var AloCms $alocms */
         $alocms = $this->app->alocms;
+        // 注册miss路由
+        $miss = $config->get('alocms.route.miss', []);
+        foreach ($miss as $method => $controller) {
+            $route->miss($controller, $method);
+        }
+        // 注册通用路由
+        $rules = $config->get('alocms.route.rules', []);
+        foreach ($rules as $uri => $rule) {
+            $route->{\strtolower($rule['method'])}($uri, $rule['controller']);
+        }
         // 加载语言文件
         $lang->load($alocms->getRootPath('library/lang') . 'zh-cn.php');
     }

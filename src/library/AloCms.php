@@ -22,8 +22,22 @@ final class AloCms
             'disable_json' => false, // 是否需禁用json字段，false代表支持，true代表不支持，默认替换json为varchar(max)，如果是string类型则替换成填写的配置
         ],
         'route' => [ // 路由配置
-            'dynamic_controller' => '\\alocms\\controller\\DynamicApi', // 动态控制器配置，全局miss 路由至该控制器进行处理
-            'dict_controller' => '\\alocms\\controller\\Dict' // 字典控制器配置，domain/dict 会路由至该控制器进行处理
+            'miss' => [ // 动态控制器配置，全局miss 路由至该控制器进行处理
+                'get' => '\\alocms\\controller\\DynamicApi@index',
+                'post' => '\\alocms\\controller\\DynamicApi@save',
+                'put' => '\\alocms\\controller\\DynamicApi@update',
+                'delete' => '\\alocms\\controller\\DynamicApi@delete',
+            ],
+            'rules' => [ // 字典控制器配置，domain/dict 会路由至该控制器进行处理
+                'dict/:id' => [
+                    'method' => 'get',
+                    'controller' => '\\alocms\\controller\\Dict@read',
+                ],
+                'dict/uri/:uri' => [
+                    'method' => 'get',
+                    'controller' => '\\alocms\\controller\\Dict@uri_read',
+                ]
+            ]
         ],
         'system' => [ // 系统配置
             'white_list' => [ // 接口请求白名单
