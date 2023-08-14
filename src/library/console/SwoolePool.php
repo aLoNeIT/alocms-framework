@@ -14,6 +14,7 @@ use think\console\Input;
 use think\console\input\Argument;
 use think\console\input\Option;
 use think\console\Output;
+use think\Container;
 
 /**
  * 方便IDE提示
@@ -372,6 +373,10 @@ class SwoolePool extends Base
             $pool->table = $swooleTable;
             $pool->on("WorkerStart", function ($pool, $workerId) use ($input, $output, $projectName) {
                 try {
+                    // 清理所有的容器内对象
+                    foreach (\app()->getIterator() as $key => $item) {
+                        app()->delete($key);
+                    }
                     $this->echoMess(lang('worker_is_running', [
                         'workerId' => $workerId,
                     ]));

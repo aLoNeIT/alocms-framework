@@ -13,13 +13,16 @@ use alocms\util\CmsException;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
 
+/**
+ * 动态页面逻辑类
+ */
 class Dynamic extends Base
 {
     /**
      * 获取当前动态页面列表页字典
      *
-     * @param string $uri
-     * @return DictUtil
+     * @param string $uri uri地址
+     * @return DictUtil 返回字典工具类
      */
     public function getSelectDict(string $uri): DictUtil
     {

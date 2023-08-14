@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\logic;
 
-use alocms\extend\dict\facade\Dict as DictFacade;
+use alocms\extend\dict\facade\Manager as DictManagerFacade;
 use alocms\extend\dict\interface\Processor as DictProcessorInterface;
 use alocms\extend\dict\util\Dict as DictUtil;
 use alocms\extend\dict\util\DictItem as DictItemUtil;
@@ -43,7 +43,7 @@ class Dict extends Base implements DictProcessorInterface
 
     protected function initialize()
     {
-        DictFacade::setProcessor($this);
+        DictManagerFacade::setProcessor($this);
     }
 
     /** @inheritDoc */
@@ -223,7 +223,7 @@ class Dict extends Base implements DictProcessorInterface
             if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
-            $query = DictFacade::build($dict, 1, $condition, $order, $fuzzy, $appType);
+            $query = DictManagerFacade::build($dict, 1, $condition, $order, $fuzzy, $appType);
             // 该条件的总数据量
             $totalCount = $query->count();
             $totalPage = 1; // 默认只有一页
@@ -265,7 +265,7 @@ class Dict extends Base implements DictProcessorInterface
             if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
-            $query = DictFacade::findByPrimaryKey($dict, $id, $order, $appType);
+            $query = DictManagerFacade::findByPrimaryKey($dict, $id, $order, $appType);
             $data = $query->find();
             if (\is_null($data)) {
                 return ErrCodeFacade::getJError(25, ['name' => $dict->name]);
@@ -291,7 +291,7 @@ class Dict extends Base implements DictProcessorInterface
             if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
-            $query = DictFacade::find($dict, 8, $condition, $order, null, $appType);
+            $query = DictManagerFacade::find($dict, 8, $condition, $order, null, $appType);
             $data = $query->find();
             if (\is_null($data)) {
                 return ErrCodeFacade::getJError(25, ['name' => $dict->name]);
@@ -320,12 +320,12 @@ class Dict extends Base implements DictProcessorInterface
             // 添加数据前缀
             $data = Helper::addPrefixArr($data, $dict->prefix);
             // 数据校验
-            $result = DictFacade::checkData($dict, 4, $data, false, $appType);
+            $result = DictManagerFacade::checkData($dict, 4, $data, false, $appType);
             if (true !== $result) {
                 return \is_string($result) ? $this->jsonTable->error($result) : $this->jsonTable->error('error', 1, $result);
             }
             // 获取处理后的query对象
-            $query = DictFacade::build($dict, 4, $condition, null, null, $appType);
+            $query = DictManagerFacade::build($dict, 4, $condition, null, null, $appType);
             $model = $query->find();
             if (\is_null($model)) {
                 return ErrCodeFacade::getJError(25, ['name' => $dict->name]);
@@ -358,11 +358,11 @@ class Dict extends Base implements DictProcessorInterface
             // 添加数据前缀
             $data = Helper::addPrefixArr($data, $dict->prefix);
             // 数据校验
-            $result = DictFacade::checkData($dict, 4, $data, false, $appType);
+            $result = DictManagerFacade::checkData($dict, 4, $data, false, $appType);
             if (true !== $result) {
                 return \is_string($result) ? $this->jsonTable->error($result) : $this->jsonTable->error('error', 1, $result);
             }
-            $query = DictFacade::build($dict, 2, [], null, null, $appType);
+            $query = DictManagerFacade::build($dict, 2, [], null, null, $appType);
             // 使用模型写入
             $model = $query->getModel();
             $model->save($data);
@@ -389,7 +389,7 @@ class Dict extends Base implements DictProcessorInterface
             if (is_numeric($dict)) {
                 $dict = $this->getDict($dict);
             }
-            $query = DictFacade::build($dict, 16, $condition, null, null, $appType);
+            $query = DictManagerFacade::build($dict, 16, $condition, null, null, $appType);
             $model = $query->find();
             if (\is_null($model)) {
                 return ErrCodeFacade::getJError(25, ['name' => $dict->name]);
