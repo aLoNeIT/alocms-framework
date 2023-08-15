@@ -70,6 +70,8 @@ class ErrCode
         // 字典相关
         '100' => 'dict_property_not_exists',
         '101' => 'dictitem_fields_empty',
+        // 业务层用户角色相关
+        '500' => 'user_role_not_exist',
 
     ];
     /**

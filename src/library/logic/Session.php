@@ -6,17 +6,9 @@ namespace alocms\logic;
 
 use alocms\constant\Common as CommonConst;
 use alocms\facade\ErrCode as ErrCodeFacade;
-use alocms\logic\Privilege as PrivilegeLogic;
-use alocms\model\Hospital as HospitalModel;
-use alocms\model\Relation as RelationModel;
-use alocms\model\Role as RoleModel;
-use alocms\model\User as UserModel;
-use alocms\model\UserEnterprise as UserEnterpriseModel;
-use alocms\model\UserSession as UserSessionModel;
-use alocms\util\CacheConst;
-use alocms\util\CmsException;
-use alocms\util\Helper;
-use alocms\util\JsonTable;
+use alocms\logic\{Role as RoleLogic, Privilege as PrivilegeLogic, User as UserLogic};
+use alocms\model\{Hospital as HospitalModel, Relation as RelationModel, Role as RoleModel, User as UserModel, UserEnterprise as UserEnterpriseModel, UserSession as UserSessionModel};
+use alocms\util\{CacheConst, Helper, JsonTable, CmsException};
 use think\captcha\Captcha;
 use think\facade\Cache as CacheFacade;
 
@@ -34,10 +26,21 @@ class Session extends Base
     protected $handler = null;
 
     /** @inheritDoc */
-    protected function initialize()
+    protected function initialize(): void
     {
         parent::initialize();
         $this->handler = app('session');
+    }
+
+    /**
+     * 获取session中存储的数据
+     *
+     * @param string $name session名称
+     * @return mixed session数据
+     */
+    protected function getSessionData(string $name)
+    {
+        return $this->handler->get($name);
     }
 
     /**
@@ -47,7 +50,11 @@ class Session extends Base
      */
     public function getUser(): ?int
     {
-        return $this->handler->get('user_id');
+        $user = $this->getSessionData('user_id');
+        if (\is_null($user)) {
+            Helper::exception(ErrCodeFacade::getJError(80));
+        }
+        return $user;
     }
 
     /**
@@ -57,7 +64,7 @@ class Session extends Base
      */
     public function getUserRealName(): ?string
     {
-        return $this->handler->get('user_real_name');
+        return $this->getSessionData('user_real_name');
     }
 
     /** 
@@ -67,41 +74,53 @@ class Session extends Base
      */
     public function getAppType(): ?int
     {
-        return $this->handler->get('app_type');
+        $appType = $this->getSessionData('app_type');
+        if (\is_null($appType)) {
+            Helper::exception(ErrCodeFacade::getJError(80));
+        }
+        return $appType;
+    }
+    /**
+     * 获取集团id
+     *
+     * @return integer|null
+     */
+    public function getCorporation(): ?int
+    {
+        return $this->getSessionData('corporation');
+    }
+    /**
+     * 获取机构id
+     *
+     * @return integer|null
+     */
+    public function getOrganization(): ?int
+    {
+        return $this->getSessionData('organization');
     }
 
     /**
      * 获取角色级别
      *
-     * @return JsonTable
+     * @return JsonTable 返回JsonTable对象，data节点是一个数组，包含max_level和min_level两个节点
      */
-    public function getRoleLevel(): JsonTable
+    public function getUserRoleLevel(): JsonTable
     {
         try {
-            if (false === $this->handler->has('user_role_level')) {
-                $userid  = $this->getUser();
+            $userRoleLevel = $this->handler->get('user_role_level');
+            if (\is_null($userRoleLevel)) {
+                $user = $this->getUser();
                 $appType = $this->getAppType();
-                if (!$userid || !$appType) {
-                    return ErrCodeFacade::getJError(80);
+                if (!($jResult = RoleLogic::instance()->getUserLevel($user, $appType))->isSuccess()) {
+                    return $jResult;
                 }
-                $role = RelationModel::instance()->getRoleByUser($userid, $appType)->fieldRaw(
-                    " max(rel_role_level) as max_level , min(rel_role_level) as min_level "
-                )->find();
-                $maxLevel  = $role->max_level ?? null;
-                $minLevel  = $role->min_level ?? null;
-                $roleLevel = [
-                    'max_level' => $maxLevel,
-                    'min_level' => $minLevel
-                ];
-                $this->handler->set('user_role_level', $roleLevel);
+                $userRoleLevel = $jResult->data;
+                // 保存至session中
+                $this->handler->set('user_role_level', $userRoleLevel);
             }
-            return $this->jsonTable->successByData($this->handler->get('user_role_level'));
-        } catch (\Exception $ex) {
-            return Helper::logListenCritical(
-                __CLASS__,
-                __FUNCTION__ . ":{$ex->getMessage()}",
-                $ex
-            );
+            return $this->jsonTable->successByData($userRoleLevel);
+        } catch (\Throwable $ex) {
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -113,34 +132,18 @@ class Session extends Base
     public function getRole(): JsonTable
     {
         try {
-            if (false === $this->handler->has('user_role')) {
-                $userid  = $this->getUser();
+            $userRole = $this->handler->get('user_role');
+            if (\is_null($userRole)) {
+                $user  = $this->getUser();
                 $appType = $this->getAppType();
-                if (!$userid || !$appType) {
-                    return ErrCodeFacade::getJError(80);
+                // 获取用户角色
+                if (!($jResult = UserLogic::instance()->getRole($user, $appType))->isSuccess()) {
+                    return $jResult;
                 }
-                $relation = RelationModel::instance()->getRoleByUser($userid, $appType)
-                    ->order('rel_role_level desc')
-                    ->select();
-
-                $roleMess = [];
-                foreach ($relation as $item) {
-                    // dump($item->role);
-                    $rId = $item->role->r_id ?? 0;
-                    $rState = $item->role->r_state ?? 0;
-                    if (0 === $rState) {
-                        //关闭的角色不可以操作
-                        continue;
-                    }
-                    $rName = $item->role->r_name ?? '';
-                    $roleMess[] = [
-                        'id'   => $rId,
-                        'name' => $rName
-                    ];
-                }
-                $this->handler->set('user_role', $roleMess);
+                $userRole = $jResult->data;
+                $this->handler->set('user_role', $userRole);
             }
-            return $this->jsonTable->successByData($this->handler->get('user_role'));
+            return $this->jsonTable->successByData($userRole);
         } catch (\Throwable $ex) {
             return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
         }

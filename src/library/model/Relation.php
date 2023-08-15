@@ -59,8 +59,22 @@ class Relation extends Base
     {
         return $this->baseAppTypeQuery($appType)
             ->alias('rel')
-            ->join('Role r', 'r.r_id =rel.rel_role', 'left')
+            ->join('Role r', 'r.r_id =rel.rel_role', 'inner')
             ->where('r_state', 1) //角色是开启的才可以使用
             ->where('rel_user', $user);
+    }
+    /**
+     * 获取指定用户的最大和最小角色id
+     *
+     * @param integer $user 用户id
+     * @param integer $appType 应用类型
+     * @return Query
+     */
+    public function getUserRoleLevel(int $user, int $appType = CommonConst::APP_TYPE_CORPORATION): Query
+    {
+        return $this->baseAppTypeQuery($appType)
+            ->where('r_state', 1)
+            ->where('rel_user', $user)
+            ->fieldRaw('max(rel_role_level) as max_level , min(rel_role_level) as min_level');
     }
 }

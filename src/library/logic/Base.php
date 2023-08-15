@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace alocms\logic;
 
 use alocms\traits\Instance as InstanceTrait;
-use alocms\util\CmsException;
 use alocms\util\Helper;
 use alocms\util\JsonTable;
 
@@ -41,7 +40,7 @@ class Base
      *
      * @return void
      */
-    protected function initialize()
+    protected function initialize(): void
     {
         $this->app = app();
         $this->jsonTable = $this->app->make('JsonTable', [], true);
