@@ -33,6 +33,7 @@ class CmsException extends \Exception
     public function __construct($msg, int $state = 1, ?array $data = null, ?\Throwable $previous = null)
     {
         if ($msg instanceof JsonTable) {
+            $previous = $previous ?: $msg->getProperty('exception');
             parent::__construct($msg->msg, $msg->state, $previous);
             $this->data = $msg->data;
             $this->state = $msg->state;

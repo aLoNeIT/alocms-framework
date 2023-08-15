@@ -447,7 +447,8 @@ class Helper
      */
     public static function logListenException(string $class, string $function, \Throwable $ex, array $data = []): JsonTable
     {
-        $ex instanceof CmsException
+        // 只有当异常不是由其他异常引起时，才记录日志
+        \is_null($ex->getPrevious()) && ($ex instanceof CmsException
             ? static::logListenError(
                 $class,
                 $function . ":{$ex->getMessage()}",
@@ -463,12 +464,13 @@ class Helper
                     'trace' => $ex->getTrace(),
                     'origin_data' => $data,
                 ]
-            );
+            )
+        );
         return JsonTableFacade::error(
             $ex->getMessage(),
             $ex instanceof CmsException ? $ex->getState() : 1,
             $ex instanceof CmsException ? $ex->getData() : $ex->getTrace()
-        );
+        )->setProperty('exception', $ex);
     }
 
     /**

@@ -37,6 +37,12 @@ class JsonTable
      */
     protected $jsonDepth = 512;
     /**
+     * 附带的异常对象
+     *
+     * @var \Throwable
+     */
+    protected $exception = null;
+    /**
      * 序列化方式
      *
      * @var integer
@@ -126,11 +132,24 @@ class JsonTable
      */
     public function setProperty(string $name, $value): static
     {
-        $properties = ['jsonoption', 'jsondepth', 'serializetype'];
+        $properties = ['jsonoption', 'jsondepth', 'serializetype', 'exception'];
         if (in_array(strtolower($name), $properties)) {
             $this->$name = $value;
         }
         return $this;
+    }
+    /**
+     * 获取属性值
+     *
+     * @param string $name 属性名
+     * @return mixed
+     */
+    public function getProperty(string $name)
+    {
+        $properties = ['jsonoption', 'jsondepth', 'serializetype', 'exception'];
+        if (in_array(strtolower($name), $properties)) {
+            return $this->$name;
+        }
     }
     /**
      * 获取JsonTable是否成功数据
