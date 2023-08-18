@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\logic;
 
+use alocms\constant\Common as CommonConst;
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\model\FunctionModel;
 use alocms\model\Relation as RelationModel;
@@ -24,7 +25,7 @@ class FunctionLogic extends Base
      * @param integer $appType 应用类型
      * @return JsonTable
      */
-    public function getFunction(int $appType = 1): JsonTable
+    public function getFunction(int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
         $data = FunctionModel::instance()->baseAppTypeQuery($appType)->select();
         return $data->isEmpty() ? ErrCodeFacade::getJError(25) : $this->jsonTable->successByData(
@@ -57,18 +58,18 @@ class FunctionLogic extends Base
     /**
      * 通过用户获取功能
      *
-     * @param integer $appType 应用类型
      * @param integer $user 用户id
+     * @param integer $appType 应用类型
      * @return JsonTable
      */
-    public function getByUser(int $appType, int $user): JsonTable
+    public function getByUser(int $user, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
         // 获取用户关联角色列表
-        $role = RelationModel::instance()->getRoleByUser($appType, $user,)->column('rel_role');
+        $role = RelationModel::instance()->getRoleByUser($user, $appType)->column('rel_role');
         // 获取角色权限
-        $rolePrivilegeModelSql = RolePrivilegeModel::instance()->getFunction($appType, $role)
+        $rolePrivilegeModelSql = RolePrivilegeModel::instance()->getFunction($role, $appType)
             ->field('rp_function_code as fn_code')->buildSql(); //
-        $userPrivilegeModelSql = UserPrivilegeModel::instance()->getFunction($appType, $user)
+        $userPrivilegeModelSql = UserPrivilegeModel::instance()->getFunction($user, $appType)
             ->field('up_function_code as fn_code')
             ->union($rolePrivilegeModelSql)->buildSql();
         $function = FunctionModel::instance()->alias('a')

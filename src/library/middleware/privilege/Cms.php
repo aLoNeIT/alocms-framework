@@ -8,6 +8,7 @@ use alocms\logic\Privilege as PrivilegeLogic;
 use alocms\logic\Session as SessionLogic;
 use alocms\middleware\Base;
 use alocms\Request;
+use alocms\util\Helper;
 use alocms\util\JsonTable;
 
 /**
@@ -25,7 +26,7 @@ class Cms extends Base
         $sessionLogic = SessionLogic::instance();
         //是否不校验session
         $sessionPassed = false;
-        if (false === $request->checkWhiteList('session')) {
+        if (!$request->checkWhiteList('session')) {
             $jResult = $sessionLogic->check($appType);
             if (!$jResult->isSuccess()) {
                 return $jResult;
@@ -33,11 +34,15 @@ class Cms extends Base
             $sessionPassed = true;
         }
         //是否是权限白名单
-        if (false === $sessionPassed && false === $request->checkWhiteList('privilege')) {
-            /** @var PrivilegeLogic $privilegeLogic */
-            $privilegeLogic = PrivilegeLogic::instance();
+        if (!$sessionPassed && !$request->checkWhiteList('privilege')) {
             // 检查用户权限
-            return $privilegeLogic->check();
+            return PrivilegeLogic::instance()->check(
+                $this->app->http->getName(),
+                $request->controller(),
+                $request->action(),
+                Helper::throwifJError($sessionLogic->getFunction())->data,
+                $appType
+            );
         }
         // 返回检查成功
         return $this->jsonTable->success();

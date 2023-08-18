@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\model;
 
+use alocms\constant\Common as CommonConst;
 use think\db\Query;
 use think\model\relation\HasMany;
 
@@ -41,7 +42,7 @@ class FunctionDetail extends Base
      * @param integer $appType 应用类型
      * @return Query 返回Query对象以便接下来的处理
      */
-    public function getCode(string $module, string $controller, string $action, int $appType): Query
+    public function getCode(string $module, string $controller, string $action, int $appType = CommonConst::APP_TYPE_ORGANIZATION): Query
     {
         return $this->field('fd_function_code')
             ->where($this->condAppType($appType))

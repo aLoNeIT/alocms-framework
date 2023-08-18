@@ -98,11 +98,11 @@ class Request extends \think\Request
     /**
      * 检查接口请求白名单
      *
-     * @return boolean 返回价差结果
+     * @return boolean 返回检查结果, true为白名单
      */
     public function checkWhiteList(string $type): bool
     {
-        $whiteList = \config('alocms.system.white_list', []);
+        $whiteList = $this->app->config->get('alocms.system.white_list', []);
         $module = $this->app->http->getName();
         $controller = $this->controller();
         $action = $this->action();
