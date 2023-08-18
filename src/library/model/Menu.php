@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\model;
 
+use alocms\constant\Common as CommonConst;
 use think\db\Query;
 use think\model\relation\HasMany;
 use think\model\relation\HasOne;
@@ -45,7 +46,7 @@ class Menu extends Base
      * @param integer $appType 应用类型
      * @return Query
      */
-    public function getByParent(?string $parent = null, int $appType = 1): Query
+    public function getByParent(?string $parent = null, int $appType = CommonConst::APP_TYPE_ORGANIZATION): Query
     {
         $condition = $this->condAppType($appType);
         $query = $this->where($condition);
@@ -59,7 +60,7 @@ class Menu extends Base
      * @param integer $appType 应用类型
      * @return Query
      */
-    public function getByUri(string $uri, int $appType = 3): Query
+    public function getByUri(string $uri, int $appType = CommonConst::APP_TYPE_ORGANIZATION): Query
     {
         $condition = $this->condAppType($appType);
         $query = $this->where($condition)->where('mn_uri', $uri);

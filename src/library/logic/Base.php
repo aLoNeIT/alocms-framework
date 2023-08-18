@@ -42,7 +42,7 @@ class Base
      */
     protected function initialize(): void
     {
-        $this->app = app();
+        $this->app = \app();
         $this->jsonTable = $this->app->make('JsonTable', [], true);
     }
     /**

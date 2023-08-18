@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace alocms\logic;
 
+use alocms\constant\Common as CommonConst;
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\model\Menu as MenuModel;
 use alocms\util\Helper;
@@ -21,7 +22,7 @@ class Menu extends Base
      * @param integer $appType 应用类型
      * @return integer 结果0-没有子集 munber-几个子集 -1--未查询到有效数据
      */
-    public function haveChild(string $field, string $code, int $appType = 3): int
+    public function haveChild(string $field, string $code, int $appType = CommonConst::APP_TYPE_ORGANIZATION): int
     {
         $parentcode = $code;
         if ($field == 'mn_id') {
@@ -41,11 +42,11 @@ class Menu extends Base
      * 校验数据逻辑
      *
      * @param string $code 待检数据
-     * @param int $appType 应用类型
      * @param int $type 类型 0-新建 其他-mn_id
+     * @param int $appType 应用类型
      * @return JsonTable 返回JsonTable结果，data节点是菜单数据
      */
-    public function checkData(string &$code, int $appType = 1, int $type = 0): JsonTable
+    public function checkData(string &$code, int $type = 0, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
         try {
             $codeLength = strlen($code);
@@ -83,23 +84,75 @@ class Menu extends Base
             }
             return $this->jsonTable->successByData($data);
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
-
+    /**
+     * 根据父级菜单编码获取菜单
+     *
+     * @param string|null $parent 父菜单编码
+     * @param integer $appType 应用类型
+     * @return JsonTable 返回JsonTable结果，data节点是菜单数据
+     */
+    public function getByParent(string $parentCode = null, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
+    {
+        try {
+            $menus = MenuModel::instance()->getByParent($parentCode, $appType)->order('mn_parent_code asc,mn_sort asc')->select();
+            if ($menus->isEmpty()) {
+                // 未查询到有效数据
+                return ErrCodeFacade::getJError(25, [
+                    'name' => '菜单数据'
+                ]);
+            }
+            return $this->jsonTable->successByData($menus->toArray());
+        } catch (\Throwable $ex) {
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
+        }
+    }
+    /**
+     * 构建树形菜单
+     *
+     * @param array $menus 菜单集合
+     * @return JsonTable 返回JsonTable结果，data节点是菜单数据
+     */
+    public function buildTree(array $menus): JsonTable
+    {
+        try {
+            // 定义树形菜单的递归函数
+            $recursion = function (string $parentCode = '', array $menus) use (&$recursion) {
+                $children = [];
+                foreach ($menus as $menu) {
+                    if ($parentCode == $menu['mn_parent_code']) {
+                        // 当前父编码下的数据，添加到数组中
+                        $children[$menu['mn_code']] = Helper::delPrefixArr($menu, 'mn_');
+                    }
+                    if (1 == $menu['mn_parented']) {
+                        // 当前菜单为父菜单，则把当前菜单作为父菜单，继续递归
+                        $children[$menu['mn_code']]['children'] = $recursion($menu['mn_code'], $menus);
+                    }
+                }
+            };
+            // 生成树形菜单
+            $tree = $recursion('', $menus);
+            return $this->jsonTable->successByData($tree);
+        } catch (\Throwable $ex) {
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
+        }
+    }
 
     /**
      * 获取菜单
      *
-     * @param int $appType 菜单类型
      * @param bool $tree 是否组装成数组
+     * @param string|null $parentMenu 父级菜单
+     * @param int $appType 菜单类型
      * @return JsonTable 返回结果集
      */
-    public function getMenu(int $appType = 1, bool $tree = true, string $parnetMenu = null): JsonTable
+    public function getMenu(bool $tree = true, string $parentMenu = null, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
         try {
-            $data = MenuModel::instance()->getByParent($parnetMenu, $appType)->order('mn_sort asc')->select();
-            $parneInfo = MenuModel::find($parnetMenu);
+            $data = MenuModel::instance()->getByParent($parentMenu, $appType)->order('mn_sort asc')->select();
+            $parneInfo = MenuModel::find($parentMenu);
             if ($tree) {
                 if (!($jResult = $this->packageMenu($data, $parneInfo))->isSuccess()) {
                     return $jResult;
@@ -110,7 +163,7 @@ class Menu extends Base
             }
             return $this->jsonTable->successByData($menu);
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 

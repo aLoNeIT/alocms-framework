@@ -9,7 +9,7 @@ use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\logic\{Role as RoleLogic, Privilege as PrivilegeLogic, User as UserLogic};
 use alocms\model\{Hospital as HospitalModel, Relation as RelationModel, Role as RoleModel, User as UserModel, UserEnterprise as UserEnterpriseModel, UserSession as UserSessionModel};
 use alocms\util\{CacheConst, Helper, JsonTable, CmsException};
-use think\captcha\Captcha;
+use think\captcha\facade\Captcha as CaptchaFacade;
 use think\facade\Cache as CacheFacade;
 
 /**
@@ -145,7 +145,7 @@ class Session extends Base
             }
             return $this->jsonTable->successByData($userRole);
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
     /**
@@ -155,21 +155,19 @@ class Session extends Base
      */
     public function getFunction(): JsonTable
     {
-        if (false === $this->handler->has('function')) {
-            $userid  = $this->getUser();
-            $appType = $this->getAppType();
-            if (!$userid || !$appType) {
-                return ErrCodeFacade::getJError(80);
+        try {
+            $functions = $this->handler->has('function');
+            if (\is_null($functions)) {
+                $userid  = $this->getUser();
+                $appType = $this->getAppType();
+                $jResult = Helper::throwifJError(PrivilegeLogic::instance()->getByUser($userid, $appType));
+                $functions = $jResult->data;
+                $this->handler->set('function', $functions);
             }
-            $jResult = PrivilegeLogic::instance()->getByUser($userid, $appType);
-            if ($jResult->isSuccess()) {
-                $function = $jResult->data;
-                $this->handler->set('function', $function);
-            } else {
-                return ErrCodeFacade::getJError(752);
-            }
+            return $this->jsonTable->successByData($functions);
+        } catch (\Throwable $ex) {
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
-        return $this->jsonTable->successByData($this->handler->get('function'));
     }
     /**
      * 获取菜单信息
@@ -178,21 +176,18 @@ class Session extends Base
      */
     public function getMenu(): JsonTable
     {
-        if (false === $this->handler->has('menu')) {
-            $userid  = $this->getUser();
-            $appType = $this->getAppType();
-            if (!$userid || !$appType) {
-                return ErrCodeFacade::getJError(80);
-            }
-            $privilegeMenu = PrivilegeLogic::instance()->getMenuByUser($appType, $userid);
-            if ($privilegeMenu->isSuccess()) {
-                $menu = $privilegeMenu->data;
+        try {
+            $menu = $this->handler->has('menu');
+            if (\is_null($menu)) {
+                $userid  = $this->getUser();
+                $appType = $this->getAppType();
+                $menu = Helper::throwifJError(PrivilegeLogic::instance()->getMenuByUser($userid, null, $appType))->data;
                 $this->handler->set('menu', $menu);
-            } else {
-                return ErrCodeFacade::getJError(751);
             }
+            return $this->jsonTable->successByData($menu);
+        } catch (\Throwable $ex) {
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
-        return $this->jsonTable->successByData($this->handler->get('menu'));
     }
 
     /**
@@ -217,31 +212,154 @@ class Session extends Base
             }
             return $this->jsonTable->success();
         } catch (\Throwable $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
             return ErrCodeFacade::getJError(80);
+        }
+    }
+    /**
+     * 登录校验
+     *
+     * @param string $account 账号
+     * @param string $password 经过一次md5的密码
+     * @param string|null $validateCode 图形验证码
+     * @param integer|null $organization 机构id
+     * @param integer|null $corporation 集团id
+     * @param integer $appType 应用类型
+     * @return UserModel
+     */
+    protected function loginCheck(
+        string $account,
+        string $password,
+        ?string $validateCode = null,
+        ?int $organization = null,
+        ?int $corporation = null,
+        int $appType = CommonConst::APP_TYPE_ORGANIZATION
+    ): UserModel {
+        /** @var \alocms\extend\think\cache\driver\RedisCluster $redis */
+        $redis = CacheFacade::store('redis');
+        // 校验登录次数
+        $key = CacheConst::accountLoginTimes($account, $appType);
+        $loginTimes = $redis->inc($key);
+        $redis->expire($key, 900);
+        if ($loginTimes > 5) {
+            Helper::exception(ErrCodeFacade::getJError(83));
+        }
+        // 校验验证码
+        if (!\is_null($validateCode)) {
+            if (!CaptchaFacade::check($validateCode)) {
+                Helper::exception(ErrCodeFacade::getJError(600));
+            }
+        }
+        // 校验密码
+        $user = UserModel::instance()->getByAccount($account, $organization, $corporation, $appType)->find();
+        if (\is_null($user) || $user->usr_pwd != Helper::md5Salt($password, $user->usr_salt, true)) {
+            Helper::exception(ErrCodeFacade::getJError(84));
+        }
+        // 校验用户状态
+        if (0 == $user->usr_state) {
+            Helper::exception(ErrCodeFacade::getJError(650));
+        }
+        // 校验机构状态
+        if (!\is_null($organization) && 0 == $user->organization->org_state) {
+            Helper::exception(ErrCodeFacade::getJError(660));
+        }
+        // 校验集团状态
+        if (!\is_null($corporation) && 0 == $user->corporation->corp_state) {
+            Helper::exception(ErrCodeFacade::getJError(670));
+        }
+        return $user;
+    }
+    /**
+     * 登录
+     *
+     * @param string $account 账号
+     * @param string $password 经过一次md5的密码
+     * @param string|null $validateCode 图形验证码
+     * @param integer|null $organization 机构id
+     * @param integer|null $corporation 集团id
+     * @param integer $appType 应用类型
+     * @return JsonTable
+     */
+    public function login(
+        string $account,
+        string $password,
+        ?string $validateCode = null,
+        ?int $organization = null,
+        ?int $corporation = null,
+        int $appType = CommonConst::APP_TYPE_ORGANIZATION
+    ): JsonTable {
+        try {
+            $user = $this->loginCheck($account, $password, $validateCode, $organization, $corporation, $appType);
+            // 提取返回值
+            $data = [];
+            foreach ([
+                'usr_id',
+                'usr_img_head_url',
+                'usr_mail',
+                'usr_mp',
+                'usr_login_time',
+                'usr_login_num',
+                'usr_login_ip',
+                'usr_app_type',
+                'usr_account',
+                'usr_corporation',
+                'usr_organization',
+                'usr_need_change',
+                'usr_pwd_update_time',
+                'usr_real_name',
+            ] as $item) {
+                $data[$item] = $user->$item;
+            }
+            // 创建会话
+            $session = $this->create($data, $appType);
+            // 菜单数据
+            $menu = Helper::throwifJError($this->getMenu())->data;
+            // 权限数据
+            $function = Helper::throwifJError($this->getFunction())->data;
+            // 角色级别数据
+            $roleLevel = Helper::throwifJError($this->getUserRoleLevel())->data;
+            // 角色数据
+            $role = Helper::throwifJError($this->getRole())->data;
+            // 清理登录次数
+            CacheFacade::store('redis')->delete(CacheConst::accountLoginTimes($account, $appType));
+            // 更新用户信息
+            $user->usr_login_time = time();
+            $user->usr_login_num = $user->usr_login_num + 1;
+            $user->usr_login_ip = $this->app->request->ip();
+            $user->save();
+            // 返回数据
+            $result = \array_merge([
+                'user' => Helper::delPrefixArr($data, 'usr_'),
+                'menu' => $menu,
+                'function' => $function,
+                'role' => $role,
+                'role_level' => $roleLevel['max_level'],
+            ], $session);
+            return $this->jsonTable->successByData($result);
+        } catch (\Throwable $ex) {
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
     /**
      * 注销
      *
-     * @return JsonTable
+     * @return void
      */
-    public function logout(): JsonTable
+    public function logout(): void
     {
-        $this->sessionRecord($this->handler->getId(), [], $this->getAppType());
-        return $this->jsonTable->success();
+        $this->syncUserData($this->handler->getId(), [], $this->getAppType());
     }
 
     /**
-     * 会话记录
+     * 同步用户会话信息，如果已存在则删除
      *
      * @param string $sessionId 会话id
      * @param array $data 用户数据
      * @param integer $appType 应用类型
      * @return void
      */
-    protected function sessionRecord(string $sessionId, array $data = [], int $appType = CommonConst::APP_TYPE_ORGANIZATION): void
+    protected function syncUserData(string $sessionId, array $data = [], int $appType = CommonConst::APP_TYPE_ORGANIZATION): void
     {
         try {
             // 查询session信息
@@ -270,7 +388,7 @@ class Session extends Base
             }
         } catch (\Throwable $ex) {
             // 该方法自身屏蔽异常，不影响上层调用
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -290,17 +408,17 @@ class Session extends Base
         }
         // 验证通过，开始生成新的token
         $data = $this->handler->all();
-        return $this->create($this->getAppType(), $data);
+        return $this->jsonTable->successByData($this->create($data, $this->getAppType()));
     }
 
     /**
      * 创建新的token信息
      *
-     * @param integer $appType 应用类型
      * @param array $data 附加的token信息
-     * @return JsonTable
+     * @param integer $appType 应用类型
+     * @return array 返回创建的会话信息
      */
-    public function create(int $appType = 1, array $data = []): JsonTable
+    protected function create(array $data = [], int $appType = CommonConst::APP_TYPE_ORGANIZATION): array
     {
         $refreshToken = Helper::randStr(32);
         $expireIn = $this->app->config->get('system.token.expires_in', 7200);
@@ -324,14 +442,12 @@ class Session extends Base
         // 设置当前会话数据
         $this->handler->setData($data);
         // 会话数据持久化
-        $this->sessionRecord($token, $data, $appType);
-        return $this->jsonTable->successByData(
-            [
-                'token' => $token,
-                'refresh_token' => $refreshToken,
-                'expire_in' => $expireIn,
-                'refresh_expire_in' => $expireIn
-            ]
-        );
+        $this->syncUserData($token, $data, $appType);
+        return [
+            'token' => $token,
+            'refresh_token' => $refreshToken,
+            'expire_in' => $expireIn,
+            'refresh_expire_in' => $expireIn
+        ];
     }
 }

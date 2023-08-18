@@ -7,6 +7,7 @@ namespace alocms\model;
 use think\db\Query;
 use think\model\concern\SoftDelete;
 use think\model\relation\HasMany;
+use think\model\relation\HasOne;
 
 /**
  * 用户模型
@@ -73,28 +74,51 @@ class User extends Base
     {
         return $this->hasMany(Relation::class, 'rel_user', 'usr_id');
     }
+    /**
+     * 机构关联模型
+     *
+     * @return HasOne
+     */
+    public function organization(): HasOne
+    {
+        return $this->hasOne(Organization::class, 'org_id', 'usr_organization');
+    }
+    /**
+     * 集团关联模型
+     *
+     * @return HasOne
+     */
+    public function corporation(): HasOne
+    {
+        return $this->hasOne(Corporation::class, 'corp_id', 'usr_corporation');
+    }
 
     /**
      * 查找指定账户用户信息
      *
-     * @param int $appType 应用类型
      * @param string $account 账号
+     * @param int $organization 机构id
+     * @param int $corporation 集团id
+     * @param int $appType 应用类型
      * @return Query
      */
-    public function getByAccount(int $appType, string $account,): Query
+    public function getByAccount(string $account, ?int $organization = null, ?int $corporation = null, int $appType): Query
     {
-        return $this->baseAppTypeQuery($appType)
+        $query =  $this->baseAppTypeQuery($appType)
             ->where('usr_account', $account);
+        $query = \is_null($organization) ? $query : $query->where('usr_organization', $organization);
+        $query = \is_null($corporation) ? $query : $query->where('usr_corporation', $corporation);
+        return $query;
     }
 
     /**
      * 查询指定手机号用户信息
      *
-     * @param integer $appType 应用类型
      * @param string $mp 手机号
+     * @param integer $appType 应用类型
      * @return Query
      */
-    public function getByMp(int $appType, string $mp): Query
+    public function getByMp(string $mp, int $appType): Query
     {
         return $this->baseAppTypeQuery($appType)
             ->where('usr_mp', $mp);

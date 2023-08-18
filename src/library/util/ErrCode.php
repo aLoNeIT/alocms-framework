@@ -66,13 +66,30 @@ class ErrCode
         // 会话相关
         '80' => 'session_not_exist',
         '81' => 'access_not_allowed',
-        '82' => 'login_info_not_correct',
+        '82' => 'login_info_incorrect',
+        '83' => 'login_failed_too_many_times',
+        '84' => 'login_account_or_password_incorrect',
         // 字典相关
         '100' => 'dict_property_not_exists',
         '101' => 'dictitem_fields_empty',
         // 业务层用户角色相关
         '500' => 'user_role_not_exist',
+        '550' => 'privilege_error',
+        '551' => 'privilege_menu_not_found',
+        '552' => 'privilege_function_not_find',
+        '560' => 'privilege_role_not_find_menu',
+        '561' => 'privilege_role_not_find_function',
+        '565' => 'privilege_user_not_find_menu',
+        '566' => 'privilege_user_not_find_function',
 
+        // 业务层辅助功能
+        '600' => 'captcha_incorrect',
+        // 用户相关
+        '650' => 'user_closed',
+        // 机构相关
+        '660' => 'organization_closed',
+        // 集团相关
+        '670' => 'corporation_closed',
     ];
     /**
      * 构造函数

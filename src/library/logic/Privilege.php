@@ -2,6 +2,7 @@
 
 namespace alocms\logic;
 
+use alocms\constant\{Common as CommonConst};
 use alocms\facade\ErrCode as ErrCodeFacade;
 use alocms\logic\CommonConst as CommonConstLogic;
 use alocms\logic\Menu as MenuLogic;
@@ -66,66 +67,58 @@ class Privilege extends Base
     /**
      * 通过用户信息获取功能列表
      *
-     * @param integer $appType 应用类型
      * @param integer $user 用户id
-     * @return JsonTable data节点为功能编码数组
+     * @param integer $appType 应用类型
+     * @return JsonTable 返回JsonTable对象，data节点为功能编码数组
      */
-    public function getByUser(int $appType, int $user): JsonTable
+    public function getByUser(int $user, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
-        // 先获取用户权限
-        $upData = UserPrivilegeModel::instance()->getFunction($appType, $user)->column('up_function_code');
-        // 获取用户关联角色列表
-        $role = RelationModel::instance()->getRoleByUser($appType, $user)->column('rel_role');
-        // 获取角色权限
-        $rpData = RolePrivilegeModel::instance()->getFunction($appType, $role)->column('rp_function_code');
-        // 合并用户权限及角色权限 ---20201214修改合并为交集
-        $function = array_merge($upData, $rpData); //array_merge($upData, $rpData);
-        //如果用户没有自定义功能。修改数据为用户具有的角色的
-        if (empty($function)) {
-            return ErrCodeFacade::getJError(29);
+        try {
+            // 先获取用户权限
+            $upFunctions = UserPrivilegeModel::instance()->getFunction($user, $appType)->column('up_function_code');
+            // 获取用户关联角色列表
+            $roles = RelationModel::instance()->getRoleByUser($user, $appType)->column('rel_role');
+            // 获取角色权限
+            $rpFunctions = RolePrivilegeModel::instance()->getFunction($roles, $appType)->column('rp_function_code');
+            // 合并用户权限及角色权限
+            $functions = array_merge($upFunctions, $rpFunctions);
+            return $this->jsonTable->successByData($functions);
+        } catch (\Throwable $ex) {
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
-        return $this->jsonTable->successByData($function);
     }
 
 
     /**
-     * 通过用户信息获取功能列表
+     * 获取用户有权限的树形菜单
      *
-     * @param integer $appType 应用类型
      * @param integer $user 用户id
-     * @param string $parentMenu 父级菜单编码
+     * @param string|null $parentMenu 父级菜单编码
+     * @param integer $appType 应用类型
      * @return JsonTable data节点为菜单显示功能编码数组
      */
-    public function getMenuByUser(int $appType, int $user, string $parnetMenu = null): JsonTable
+    public function getMenuByUser(int $user, string $parentCode = null, int $appType = CommonConst::APP_TYPE_ORGANIZATION): JsonTable
     {
         try {
-            $upMenu = [];
-            // 获取菜单
-            if (!($jResult = MenuLogic::instance()->getMenu(false, $parnetMenu, $appType))->isSuccess()) {
-                return $jResult;
-            }
-            $menu = $jResult->data ?? [];
-            // 获取用户权限
-            if (!($jResult = $this->getByUser($user, $appType))->isSuccess()) {
-                return $jResult;
-            }
-            $function = $jResult->data;
-            //提取具有权限部分菜单
-            foreach ($function as $val) {
-                if (substr($val, -1, 2) == '00') {
-                    $mcode = 'MN' . substr($val, 2, strlen($val) - 4);
-                    foreach ($menu as $menuval) {
-                        if ($menuval["mn_code"] === $mcode) {
-                            $upMenu[$mcode] = $menuval;
-                        }
-                    }
+            // 获取所有菜单信息
+            $jResult = Helper::throwifJError(MenuLogic::instance()->getByParent($parentCode, $appType));
+            $menus = $jResult->data;
+            // 获取用户权限集合
+            $jResult = Helper::throwifJError($this->getByUser($user, $appType));
+            $functions = $jResult->data;
+            // 用户拥有权限的菜单集合
+            $upMenus = [];
+            // 提取具有权限部分菜单
+            foreach ($menus as $menu) {
+                $fnCode = \str_replace('MN', 'FN', $menu['mn_code']) . '00';
+                if (\in_array($fnCode, $functions)) {
+                    $upMenus[] = $menu;
                 }
             }
-            $flag = array_column($upMenu, 'mn_sort');
-            array_multisort($flag, SORT_ASC, $upMenu);
-            return MenuLogic::instance()->packageMenuByArray($upMenu, 'mn_');
+            // 调用树形菜单构建函数
+            return MenuLogic::instance()->buildTree($upMenus);
         } catch (\Throwable $ex) {
-            return Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            return Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -178,7 +171,7 @@ class Privilege extends Base
             }
             return MenuLogic::instance()->packageMenuByArray($funclist);
         } catch (\Throwable $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -243,7 +236,7 @@ class Privilege extends Base
             }
             return MenuLogic::instance()->packageMenuByArray($funclist);
         } catch (\Throwable $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -302,7 +295,7 @@ class Privilege extends Base
             RolePrivilegeModel::instance()->saveAll($data);
             return $this->jsonTable->success();
         } catch (\Throwable $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 
@@ -337,7 +330,7 @@ class Privilege extends Base
             UserPrivilegeModel::instance()->saveAll($data);
             return $this->jsonTable->success();
         } catch (\Throwable $ex) {
-            Helper::logListenCritical(static::class, __FUNCTION__, $ex);
+            Helper::logListenException(static::class, __FUNCTION__, $ex);
         }
     }
 }
