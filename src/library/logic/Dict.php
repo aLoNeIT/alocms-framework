@@ -41,7 +41,7 @@ class Dict extends Base implements DictProcessorInterface
      */
     protected $itemName = [];
 
-    protected function initialize()
+    protected function initialize(): void
     {
         DictManagerFacade::setProcessor($this);
     }
