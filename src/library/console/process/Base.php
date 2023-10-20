@@ -135,6 +135,7 @@ abstract class Base extends CommonBase
     protected function loopUninitialize(): void
     {
         $this->reset();
+        $this->lastTime = \time();
     }
     /**
      * 每次运行都会初始化一次
@@ -154,7 +155,6 @@ abstract class Base extends CommonBase
             // 重新配置相关信息
             Model::setDb($app->db);
             // todo 如果子进程有用到validate和view，或某些扩展的驱动也有长连接的，也需要注意重新设置
-            $this->lastTime = time();
         }
     }
 }

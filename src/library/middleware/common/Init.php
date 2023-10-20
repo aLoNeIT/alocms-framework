@@ -11,7 +11,7 @@ use think\Response;
 
 /**
  * 系统权限全局预处理
- * @author 王阮强 <wangruanqiang@youzhibo.cn>
+ * @author alone <alone@alonetech.com>
  * @date 2020-10-15
  */
 class Init extends Base
